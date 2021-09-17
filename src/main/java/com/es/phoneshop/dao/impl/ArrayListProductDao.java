@@ -1,14 +1,12 @@
 package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.enums.SortField;
+import com.es.phoneshop.enums.SortOrder;
+import com.es.phoneshop.model.Product;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -17,34 +15,101 @@ public class ArrayListProductDao implements ProductDao {
     private long maxId;
     private final List<Product> products;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private static volatile ProductDao instance;
 
-    public ArrayListProductDao() {
+    public static synchronized ProductDao getInstance() {
+        if (instance == null) {
+            synchronized (ArrayListProductDao.class) {
+                if (instance == null) {
+                    instance = new ArrayListProductDao();
+                }
+            }
+        }
+        return instance;
+    }
+
+    private ArrayListProductDao() {
         maxId = 0;
         products = new ArrayList<>();
-        getSampleProducts();
     }
 
     @Override
-    public Product getProduct(Long id) throws ProductNotFoundException {
+    public Product getProduct(Long id) {
         readWriteLock.readLock().lock();
         try {
             return products.stream()
-                    .filter(product -> product.getId().equals(id) && product.getPrice() != null && product.getStock() > 0)
+                    .filter(this::checkProductInStock)
+                    .filter(pr -> pr.getId().equals(id))
                     .findAny()
-                    .orElseThrow(() -> new ProductNotFoundException("Product wasn't found"));
-
+                    .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + " was not found"));
         } finally {
             readWriteLock.readLock().unlock();
         }
     }
 
-    @Override
-    public List<Product> findProducts() {
-        readWriteLock.readLock().lock();
-        try {
+    private boolean checkProductInStock(Product product) {
+        return product.getPrice() != null && product.getStock() > 0;
+    }
+
+    private double compareByRelevancy(Product product, List<String> tokens) {
+        long tokenNumber = 0;
+        if (product.getDescription() != null && !product.getDescription().equals("")) {
+            tokenNumber = tokens.stream().filter(token -> product.getDescription().contains(token)).count();
+            return tokenNumber / (double) product.getDescription().split("\\s").length;
+        }
+        return tokenNumber;
+    }
+
+    private List<Product> sortByQuery(String query, List<Product> products) {
+        List<String> tokens = Arrays.asList(query.split("\\s"));
+        Comparator<Product> comparator =
+                Comparator.comparingDouble(product -> compareByRelevancy(product, tokens));
+        return products.stream()
+                .filter(product -> tokens.stream()
+                        .anyMatch(token -> product.getDescription() != null && product.getDescription().contains(token)))
+                .sorted(comparator.reversed())
+                .collect(Collectors.toList());
+    }
+
+    private Comparator<Product> getComparatorBySortField(String sortField, String sortOrder) {
+        Comparator<Product> comparator = null;
+        if (SortField.DESCRIPTION.toString().equalsIgnoreCase(sortField)) {
+            comparator = Comparator.comparing(Product::getDescription);
+        } else if (SortField.PRICE.toString().equalsIgnoreCase(sortField)) {
+            comparator = Comparator.comparing(Product::getPrice);
+        }
+        if (SortOrder.DESC.toString().equalsIgnoreCase(sortOrder) && comparator != null) {
+            return comparator.reversed();
+        }
+        return comparator;
+    }
+
+    private List<Product> sortByField(List<Product> products, String sortField, String sortOrder) {
+        Comparator<Product> comp = getComparatorBySortField(sortField, sortOrder);
+        if (comp != null) {
             return products.stream()
-                    .filter(product -> product.getPrice() != null && product.getStock() > 0)
+                    .sorted(comp)
                     .collect(Collectors.toList());
+        } else {
+            return products;
+        }
+    }
+
+    @Override
+    public List<Product> findProducts(String query, String sortField, String sortOrder) {
+        readWriteLock.readLock().lock();
+        List<Product> fetchedProducts;
+        try {
+            fetchedProducts = products.stream()
+                    .filter(this::checkProductInStock)
+                    .collect(Collectors.toList());
+            if (query != null && !query.isEmpty()) {
+                fetchedProducts = sortByQuery(query, fetchedProducts);
+            }
+            if (sortField != null && !sortField.isEmpty() && sortOrder != null && !sortOrder.isEmpty()) {
+                fetchedProducts = sortByField(fetchedProducts, sortField, sortOrder);
+            }
+            return fetchedProducts;
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -72,28 +137,6 @@ public class ArrayListProductDao implements ProductDao {
         readWriteLock.writeLock().lock();
         try {
             products.removeIf(product -> product.getId().equals(id));
-        } finally {
-            readWriteLock.writeLock().unlock();
-        }
-    }
-
-    private void getSampleProducts() {
-        readWriteLock.writeLock().lock();
-        try {
-            Currency usd = Currency.getInstance("USD");
-            save(new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "/Samsung/Samsung%20Galaxy%20S.jpg"));
-            save(new Product("sgs2", "Samsung Galaxy S II", new BigDecimal(200), usd, 0, "/Samsung/Samsung%20Galaxy%20S%20II.jpg"));
-            save(new Product("sgs3", "Samsung Galaxy S III", new BigDecimal(300), usd, 5, "/Samsung/Samsung%20Galaxy%20S%20III.jpg"));
-            save(new Product("iphone", "Apple iPhone", new BigDecimal(200), usd, 10, "/Apple/Apple%20iPhone.jpg"));
-            save(new Product("iphone6", "Apple iPhone 6", new BigDecimal(1000), usd, 30, "/Apple/Apple%20iPhone%206.jpg"));
-            save(new Product("htces4g", "HTC EVO Shift 4G", new BigDecimal(320), usd, 3, "/HTC/HTC%20EVO%20Shift%204G.jpg"));
-            save(new Product("sec901", "Sony Ericsson C901", new BigDecimal(420), usd, 30, "/Sony/Sony%20Ericsson%20C901.jpg"));
-            save(new Product("xperiaxz", "Sony Xperia XZ", new BigDecimal(120), usd, 100, "/Sony/Sony%20Xperia%20XZ.jpg"));
-            save(new Product("nokia3310", "Nokia 3310", new BigDecimal(70), usd, 100, "/Nokia/Nokia%203310.jpg"));
-            save(new Product("palmp", "Palm Pixi", new BigDecimal(170), usd, 30, "/Palm/Palm%20Pixi.jpg"));
-            save(new Product("simc56", "Siemens C56", new BigDecimal(70), usd, 20, "/Siemens/Siemens%20C56.jpg"));
-            save(new Product("simc61", "Siemens C61", new BigDecimal(80), usd, 30, "/Siemens/Siemens%20C61.jpg"));
-            save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "/Siemens/Siemens%20SXG75.jpg"));
         } finally {
             readWriteLock.writeLock().unlock();
         }
