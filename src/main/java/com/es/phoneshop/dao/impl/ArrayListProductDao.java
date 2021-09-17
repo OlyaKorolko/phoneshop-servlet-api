@@ -2,8 +2,8 @@ package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.exception.ProductNotFoundException;
-import com.es.phoneshop.model.SortField;
-import com.es.phoneshop.model.SortOrder;
+import com.es.phoneshop.enums.SortField;
+import com.es.phoneshop.enums.SortOrder;
 import com.es.phoneshop.model.Product;
 
 import java.util.*;
@@ -41,7 +41,7 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(this::checkProductInStock)
                     .filter(pr -> pr.getId().equals(id))
                     .findAny()
-                    .orElseThrow(() -> new ProductNotFoundException("Product wasn't found"));
+                    .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + " was not found"));
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -73,12 +73,12 @@ public class ArrayListProductDao implements ProductDao {
 
     private Comparator<Product> getComparatorBySortField(String sortField, String sortOrder) {
         Comparator<Product> comparator = null;
-        if (SortField.DESCRIPTION.toString().toLowerCase().equals(sortField)) {
+        if (SortField.DESCRIPTION.toString().equalsIgnoreCase(sortField)) {
             comparator = Comparator.comparing(Product::getDescription);
-        } else if (SortField.PRICE.toString().toLowerCase().equals(sortField)) {
+        } else if (SortField.PRICE.toString().equalsIgnoreCase(sortField)) {
             comparator = Comparator.comparing(Product::getPrice);
         }
-        if (SortOrder.DESC.toString().toLowerCase().equals(sortOrder) && comparator != null) {
+        if (SortOrder.DESC.toString().equalsIgnoreCase(sortOrder) && comparator != null) {
             return comparator.reversed();
         }
         return comparator;
