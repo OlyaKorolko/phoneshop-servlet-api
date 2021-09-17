@@ -1,9 +1,10 @@
 package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.SortField;
 import com.es.phoneshop.model.SortOrder;
-import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.Product;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -14,10 +15,16 @@ public class ArrayListProductDao implements ProductDao {
     private long maxId;
     private final List<Product> products;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    private static ProductDao instance;
+    private static volatile ProductDao instance;
 
     public static synchronized ProductDao getInstance() {
-        if (instance == null) instance = new ArrayListProductDao();
+        if (instance == null) {
+            synchronized (ArrayListProductDao.class) {
+                if (instance == null) {
+                    instance = new ArrayListProductDao();
+                }
+            }
+        }
         return instance;
     }
 
@@ -27,51 +34,65 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public Optional<Product> getProduct(Long id) {
+    public Product getProduct(Long id) {
         readWriteLock.readLock().lock();
         try {
             return products.stream()
-                    .filter(product -> product.getId().equals(id) && product.getPrice() != null && product.getStock() > 0)
-                    .findAny();
+                    .filter(this::checkProductInStock)
+                    .filter(pr -> pr.getId().equals(id))
+                    .findAny()
+                    .orElseThrow(() -> new ProductNotFoundException("Product wasn't found"));
         } finally {
             readWriteLock.readLock().unlock();
         }
     }
 
-    private List<Product> getProductsInStock(List<Product> products) {
-        return products.stream()
-                .filter(product -> product.getPrice() != null && product.getStock() > 0)
-                .collect(Collectors.toList());
+    private boolean checkProductInStock(Product product) {
+        return product.getPrice() != null && product.getStock() > 0;
     }
 
     private double compareByRelevancy(Product product, List<String> tokens) {
-        long tokenNumber = tokens.stream().filter(token -> product.getDescription().contains(token)).count();
-        return tokenNumber / (double) product.getDescription().split("\\s").length;
+        long tokenNumber = 0;
+        if (product.getDescription() != null && !product.getDescription().equals("")) {
+            tokenNumber = tokens.stream().filter(token -> product.getDescription().contains(token)).count();
+            return tokenNumber / (double) product.getDescription().split("\\s").length;
+        }
+        return tokenNumber;
     }
 
     private List<Product> sortByQuery(String query, List<Product> products) {
-        List<String> tokens = Arrays.asList(query.split("\\s").clone());
+        List<String> tokens = Arrays.asList(query.split("\\s"));
         Comparator<Product> comparator =
                 Comparator.comparingDouble(product -> compareByRelevancy(product, tokens));
         return products.stream()
-                .filter(product -> tokens.stream().anyMatch(token -> product.getDescription().contains(token)))
+                .filter(product -> tokens.stream()
+                        .anyMatch(token -> product.getDescription() != null && product.getDescription().contains(token)))
                 .sorted(comparator.reversed())
                 .collect(Collectors.toList());
     }
 
     private Comparator<Product> getComparatorBySortField(String sortField, String sortOrder) {
-        Comparator<Product> comparator;
+        Comparator<Product> comparator = null;
         if (SortField.DESCRIPTION.toString().toLowerCase().equals(sortField)) {
             comparator = Comparator.comparing(Product::getDescription);
-        } else comparator = Comparator.comparing(Product::getPrice);
-        if (SortOrder.DESC.toString().toLowerCase().equals(sortOrder)) return comparator.reversed();
-        else return comparator;
+        } else if (SortField.PRICE.toString().toLowerCase().equals(sortField)) {
+            comparator = Comparator.comparing(Product::getPrice);
+        }
+        if (SortOrder.DESC.toString().toLowerCase().equals(sortOrder) && comparator != null) {
+            return comparator.reversed();
+        }
+        return comparator;
     }
 
     private List<Product> sortByField(List<Product> products, String sortField, String sortOrder) {
-        return products.stream()
-                .sorted(getComparatorBySortField(sortField, sortOrder))
-                .collect(Collectors.toList());
+        Comparator<Product> comp = getComparatorBySortField(sortField, sortOrder);
+        if (comp != null) {
+            return products.stream()
+                    .sorted(comp)
+                    .collect(Collectors.toList());
+        } else {
+            return products;
+        }
     }
 
     @Override
@@ -79,7 +100,9 @@ public class ArrayListProductDao implements ProductDao {
         readWriteLock.readLock().lock();
         List<Product> fetchedProducts;
         try {
-            fetchedProducts = getProductsInStock(products);
+            fetchedProducts = products.stream()
+                    .filter(this::checkProductInStock)
+                    .collect(Collectors.toList());
             if (query != null && !query.isEmpty()) {
                 fetchedProducts = sortByQuery(query, fetchedProducts);
             }

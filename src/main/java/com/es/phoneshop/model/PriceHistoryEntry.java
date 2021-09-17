@@ -1,16 +1,16 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.Objects;
 
-public class PriceTag {
+public class PriceHistoryEntry {
     private final LocalDateTime priceChangeDate;
     private final BigDecimal price;
     private final Currency currency;
 
-    public PriceTag(LocalDateTime priceChangeDate, BigDecimal price, Currency currency) {
+    public PriceHistoryEntry(LocalDateTime priceChangeDate, BigDecimal price, Currency currency) {
         this.priceChangeDate = priceChangeDate;
         this.price = price;
         this.currency = currency;
@@ -32,9 +32,9 @@ public class PriceTag {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PriceTag priceTag = (PriceTag) o;
-        return Objects.equals(priceChangeDate, priceTag.priceChangeDate) &&
-                Objects.equals(price, priceTag.price);
+        PriceHistoryEntry priceHistoryEntry = (PriceHistoryEntry) o;
+        return Objects.equals(priceChangeDate, priceHistoryEntry.priceChangeDate) &&
+                Objects.equals(price, priceHistoryEntry.price);
     }
 
     @Override

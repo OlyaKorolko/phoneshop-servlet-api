@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.product;
+package com.es.phoneshop.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ public class Product {
     private int stock;
     private final String path = "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer";
     private String imageUrl;
-    private final List<PriceTag> priceHistory;
+    private final List<PriceHistoryEntry> priceHistory;
 
     public Product() {
         priceHistory = new ArrayList<>();
@@ -36,7 +36,7 @@ public class Product {
         this.stock = stock;
         this.imageUrl = path + imageUrl;
         priceHistory = new ArrayList<>();
-        priceHistory.add(new PriceTag(LocalDateTime.now(), price, currency));
+        priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
     }
 
     public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
@@ -47,7 +47,7 @@ public class Product {
         this.stock = stock;
         this.imageUrl = path + imageUrl;
         priceHistory = new ArrayList<>();
-        priceHistory.add(new PriceTag(LocalDateTime.now(), price, currency));
+        priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
     }
 
     public Long getId() {
@@ -80,7 +80,7 @@ public class Product {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-        priceHistory.add(new PriceTag(LocalDateTime.now(), price, currency));
+        priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
     }
 
     public Currency getCurrency() {
@@ -107,7 +107,7 @@ public class Product {
         this.imageUrl = imageUrl;
     }
 
-    public List<PriceTag> getPriceHistory() {
+    public List<PriceHistoryEntry> getPriceHistory() {
         return priceHistory;
     }
 }
