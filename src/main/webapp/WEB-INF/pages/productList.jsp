@@ -44,4 +44,22 @@
       </tr>
     </c:forEach>
   </table>
+  <c:if test="${not empty viewHistory.getHistory()}">
+    <p>Recently viewed</p>
+  </c:if>
+  <ul>
+    <c:forEach var="product" items="${viewHistory.getHistory()}">
+      <li class="cell">
+        <img class="product-tile" src="${product.imageUrl}">
+          <p>
+            <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
+            ${product.description}
+          </p>
+          <p>
+            <a href="${pageContext.servletContext.contextPath}/products/price-history/${product.id}">
+            <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+          </p>
+      </li>
+    </c:forEach>
+  </ul>
 </tags:master>

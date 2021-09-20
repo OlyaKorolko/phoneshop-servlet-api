@@ -5,4 +5,5 @@
 
 <tags:master pageTitle="Error">
   <h1>Sorry! An unexpected error occurred.</h1>
+  <h3>${message}</h3>
 </tags:master>
