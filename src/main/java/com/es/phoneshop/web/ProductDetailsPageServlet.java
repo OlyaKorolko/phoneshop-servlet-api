@@ -2,6 +2,7 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.enums.ProductParam;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.service.CartService;
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.text.ParseException;
+import java.text.ParsePosition;
 
 public class ProductDetailsPageServlet extends HttpServlet {
     private ProductDao productDao;
@@ -36,27 +37,32 @@ public class ProductDetailsPageServlet extends HttpServlet {
         try {
             productId = parseProductId(request);
         } catch (NumberFormatException ex) {
-            request.setAttribute("message", "Parsing failed: invalid product number");
+            request.setAttribute(String.valueOf(ProductParam.ERROR).toLowerCase(), "Parsing failed: invalid product number");
             response.sendError(500);
             return;
         }
-        viewHistoryService.addToHistory(viewHistoryService.getViewHistory(request), productDao.getProduct(productId));
-        request.setAttribute("product", productDao.getProduct(productId));
-        request.setAttribute("cart", cartService.getCart(request));
+        request.setAttribute(String.valueOf(ProductParam.VIEW_HISTORY).toLowerCase(), viewHistoryService.getViewHistory(request));
+        request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(), productDao.getProduct(productId));
+        request.setAttribute(String.valueOf(ProductParam.CART).toLowerCase(), cartService.getCart(request));
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
+        viewHistoryService.addToHistory(viewHistoryService.getViewHistory(request).getHistory(), productDao.getProduct(productId));
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String quantityString = request.getParameter("quantity");
+        String quantityString = request.getParameter(String.valueOf(ProductParam.QUANTITY).toLowerCase());
         int quantity;
         Long productId;
         try {
             productId = parseProductId(request);
+            ParsePosition parsePosition = new ParsePosition(0);
             NumberFormat format = NumberFormat.getInstance(request.getLocale());
-            quantity = format.parse(quantityString).intValue();
-        } catch (NumberFormatException | ParseException ex) {
-            request.setAttribute("error", "Parsing failed: not a number");
+            quantity = format.parse(quantityString, parsePosition).intValue();
+            if (quantityString.length() != parsePosition.getIndex()) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException ex) {
+            request.setAttribute(String.valueOf(ProductParam.ERROR).toLowerCase(), "Parsing failed: not a number");
             doGet(request, response);
             return;
         }
@@ -64,7 +70,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
         try {
             cartService.add(cart, productId, quantity);
         } catch (OutOfStockException e) {
-            request.setAttribute("error", "Out of stock, available: " + e.getStockAvailable());
+            request.setAttribute(String.valueOf(ProductParam.ERROR).toLowerCase(), "Out of stock, available: " + e.getStockAvailable());
             doGet(request, response);
             return;
         }

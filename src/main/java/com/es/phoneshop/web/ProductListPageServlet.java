@@ -2,6 +2,8 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.enums.ProductParam;
+import com.es.phoneshop.enums.SortParam;
 import com.es.phoneshop.service.ViewHistoryService;
 import com.es.phoneshop.service.impl.DefaultViewHistoryService;
 
@@ -24,11 +26,11 @@ public class ProductListPageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String query = request.getParameter("query");
-        String sortField = request.getParameter("sort");
-        String sortOrder = request.getParameter("order");
-        request.setAttribute("products", productDao.findProducts(query, sortField, sortOrder));
-        request.setAttribute("viewHistory", viewHistoryService.getViewHistory(request));
+        String query = request.getParameter(String.valueOf(SortParam.QUERY).toLowerCase());
+        String sortField = request.getParameter(String.valueOf(SortParam.SORT).toLowerCase());
+        String sortOrder = request.getParameter(String.valueOf(SortParam.ORDER).toLowerCase());
+        request.setAttribute(String.valueOf(ProductParam.PRODUCTS).toLowerCase(), productDao.findProducts(query, sortField, sortOrder));
+        request.setAttribute(String.valueOf(ProductParam.VIEW_HISTORY).toLowerCase(), viewHistoryService.getViewHistory(request));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 }

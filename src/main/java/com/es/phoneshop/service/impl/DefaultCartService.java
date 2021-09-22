@@ -9,12 +9,13 @@ import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.service.CartService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultCartService implements CartService {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    public static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
+    public static final String CART_SESSION_ATTRIBUTE = "cart";
     private static volatile CartService instance;
     private final ProductDao productDao;
 
@@ -48,22 +49,16 @@ public class DefaultCartService implements CartService {
     }
 
     @Override
-    public synchronized void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
+    public void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
         readWriteLock.writeLock().lock();
         try {
             Product product = productDao.getProduct(productId);
             if (product.getStock() < quantity) {
                 throw new OutOfStockException(product, product.getStock(), quantity);
             }
-            if (cart.getItems()
-                    .stream()
-                    .anyMatch(cartItem -> cartItem.getProduct().equals(product))) {
-                CartItem cartItem = cart.getItems()
-                        .stream()
-                        .filter(c -> c.getProduct().equals(product))
-                        .findFirst()
-                        .get();
-                cartItem.updateQuantity(quantity);
+            Optional<CartItem> foundCartItem = findCartItem(cart, product);
+            if (foundCartItem.isPresent()) {
+                foundCartItem.get().updateQuantity(quantity);
             } else {
                 CartItem cartItem = new CartItem(product, quantity);
                 product.setStock(product.getStock() - quantity);
@@ -72,5 +67,11 @@ public class DefaultCartService implements CartService {
         } finally {
             readWriteLock.writeLock().unlock();
         }
+    }
+    private Optional<CartItem> findCartItem(Cart cart, Product product) {
+        return cart.getItems()
+                .stream()
+                .filter(c -> c.getProduct().equals(product))
+                .findFirst();
     }
 }

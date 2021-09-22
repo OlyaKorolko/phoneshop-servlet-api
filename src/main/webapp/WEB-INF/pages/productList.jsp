@@ -44,11 +44,11 @@
       </tr>
     </c:forEach>
   </table>
-  <c:if test="${not empty viewHistory.getHistory()}">
+  <c:if test="${not empty view_history.getHistory()}">
     <p>Recently viewed</p>
   </c:if>
   <ul>
-    <c:forEach var="product" items="${viewHistory.getHistory()}">
+    <c:forEach var="product" items="${view_history.getHistory()}">
       <li class="cell">
         <img class="product-tile" src="${product.imageUrl}">
           <p>

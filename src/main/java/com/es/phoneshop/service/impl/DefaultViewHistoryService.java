@@ -5,30 +5,39 @@ import com.es.phoneshop.model.viewHistory.ViewHistory;
 import com.es.phoneshop.service.ViewHistoryService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultViewHistoryService implements ViewHistoryService {
     private static volatile ViewHistoryService instance;
-    private static final String VIEW_HISTORY_SESSION_ATTRIBUTE = DefaultViewHistoryService.class.getName() + ".viewHistory";
+    private static final String VIEW_HISTORY_SESSION_ATTRIBUTE = "viewHistory";
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public static synchronized ViewHistoryService getInstance() {
         if (instance == null) {
             synchronized (DefaultCartService.class) {
                 if (instance == null) {
-                    instance = new DefaultViewHistoryService() {
-                    };
+                    instance = new DefaultViewHistoryService();
                 }
             }
         }
         return instance;
     }
+
     @Override
-    public void addToHistory(ViewHistory viewHistory, Product product) {
+    public void addToHistory(List<Product> viewHistory, Product product) {
         readWriteLock.writeLock().lock();
         try {
-            viewHistory.addToHistory(product);
+            if (!viewHistory.contains(product)) {
+                if (viewHistory.size() == ViewHistory.CAPACITY) {
+                    viewHistory.remove(0);
+                }
+                viewHistory.add(product);
+            } else if (viewHistory.size() > 1) {
+                viewHistory.remove(product);
+                viewHistory.add(product);
+            }
         } finally {
             readWriteLock.writeLock().unlock();
         }

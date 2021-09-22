@@ -5,6 +5,9 @@
 
 <tags:master pageTitle="Product Details">
   <p>
+    <input type="button" onclick="location.href='${pageContext.servletContext.contextPath}/products'" value="Back"/>
+  </p>
+  <p>
     Cart: ${cart}
   </p>
   <c:if test="${not empty param.message}">
@@ -43,7 +46,7 @@
          <tr>
             <td>Quantity</td>
             <td>
-                <input name="quantity" value="${not empty error ? param.quantity : 1}" class="quantity">
+                <input name="quantity" value="${not empty error ? param.quantity : 1}" pattern="\d+" class="quantity" required>
                 <c:if test="${not empty error}">
                     <div class="error">
                         ${error}
@@ -56,4 +59,22 @@
         <button>Add to cart</button>
      </p>
   </form>
+  <c:if test="${not empty view_history.getHistory()}">
+      <p>Recently viewed</p>
+    </c:if>
+    <ul>
+      <c:forEach var="product" items="${view_history.getHistory()}">
+        <li class="cell">
+          <img class="product-tile" src="${product.imageUrl}">
+            <p>
+              <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
+              ${product.description}
+            </p>
+            <p>
+              <a href="${pageContext.servletContext.contextPath}/products/price-history/${product.id}">
+              <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+            </p>
+        </li>
+      </c:forEach>
+    </ul>
 </tags:master>
