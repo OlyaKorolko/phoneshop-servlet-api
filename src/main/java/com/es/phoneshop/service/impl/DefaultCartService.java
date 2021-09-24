@@ -71,7 +71,7 @@ public class DefaultCartService implements CartService {
     private Optional<CartItem> findCartItem(Cart cart, Product product) {
         return cart.getItems()
                 .stream()
-                .filter(c -> c.getProduct().equals(product))
+                .filter(c -> c.getProduct().getId().equals(product.getId()))
                 .findFirst();
     }
 }

@@ -59,7 +59,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
             NumberFormat format = NumberFormat.getInstance(request.getLocale());
             quantity = format.parse(quantityString, parsePosition).intValue();
             if (quantityString.length() != parsePosition.getIndex()) {
-                throw new NumberFormatException();
+                throw new NumberFormatException("Parsing failed: not a number");
             }
         } catch (NumberFormatException ex) {
             request.setAttribute(String.valueOf(ProductParam.ERROR).toLowerCase(), "Parsing failed: not a number");
