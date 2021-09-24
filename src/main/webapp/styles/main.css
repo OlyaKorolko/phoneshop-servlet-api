@@ -22,10 +22,29 @@ td {
   vertical-align: top;
 }
 .price {
-  text-align: right;
+   text-align: right;
+}
+.success {
+   color: green;
+}
+.error {
+   color: red;
 }
 img.product-tile {
-  max-width: 64px;
+   max-width: 64px;
+}
+ul {
+  padding-left: 0;
+}
+.cell {
+   float: left;
+   padding: 16px;
+   padding-bottom: 0;
+   text-align: center;
+   list-style: none;
+   border-collapse: collapse;
+   border : 1px solid gray;
+   margin: 5px;
 }
 
 /* Page specific styles */
