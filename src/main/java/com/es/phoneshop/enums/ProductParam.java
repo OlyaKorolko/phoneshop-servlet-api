@@ -5,6 +5,5 @@ public enum ProductParam {
     PRODUCTS,
     VIEW_HISTORY,
     QUANTITY,
-    CART,
     ERROR
 }

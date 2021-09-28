@@ -24,4 +24,9 @@ public class OutOfStockException extends Exception {
     public int getStockRequested() {
         return stockRequested;
     }
+
+    @Override
+    public String getMessage() {
+        return "Out of stock, available: " + getStockAvailable() + ", requested: " + getStockRequested();
+    }
 }

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ProductPriceHistoryPageServlet extends HttpServlet {
+    private static final String PRICE_HISTORY_PATH = "/WEB-INF/pages/productPriceHistory.jsp";
     private ProductDao productDao;
 
     @Override
@@ -23,6 +24,6 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId = request.getPathInfo();
         request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(), productDao.getProduct(Long.valueOf(productId.substring(1))));
-        request.getRequestDispatcher("/WEB-INF/pages/productPriceHistory.jsp").forward(request, response);
+        request.getRequestDispatcher(PRICE_HISTORY_PATH).forward(request, response);
     }
 }

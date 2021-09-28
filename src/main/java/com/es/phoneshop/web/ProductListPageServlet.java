@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ProductListPageServlet extends HttpServlet {
+    private static final String PRODUCTS_PATH = "/WEB-INF/pages/productList.jsp";
     private ProductDao productDao;
     private ViewHistoryService viewHistoryService;
 
@@ -31,6 +32,11 @@ public class ProductListPageServlet extends HttpServlet {
         String sortOrder = request.getParameter(String.valueOf(SortParam.ORDER).toLowerCase());
         request.setAttribute(String.valueOf(ProductParam.PRODUCTS).toLowerCase(), productDao.findProducts(query, sortField, sortOrder));
         request.setAttribute(String.valueOf(ProductParam.VIEW_HISTORY).toLowerCase(), viewHistoryService.getViewHistory(request));
-        request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
+        request.getRequestDispatcher(PRODUCTS_PATH).forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
     }
 }
