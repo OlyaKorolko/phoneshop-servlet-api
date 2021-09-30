@@ -58,7 +58,7 @@
         <td>
           <c:set var="error" value="${errors[product.id]}"/>
           <input id="quantity" form="addItemToCart" name="quantity"
-            value="${not empty error ? paramValues['quantity'][status.index] : 1}">
+            value="${not empty error ? paramValues['quantity'][status.index] : 1}" pattern="\d+" required>
             <c:if test="${not empty error}">
               <div class="error">
                 ${error}
