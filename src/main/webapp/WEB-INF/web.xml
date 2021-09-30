@@ -56,7 +56,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>deleteCartItem</servlet-name>
-        <url-pattern>/cart/deleteCartItem/*</url-pattern>
+        <url-pattern>/cart/delete-cart-item/*</url-pattern>
     </servlet-mapping>
 
     <servlet>

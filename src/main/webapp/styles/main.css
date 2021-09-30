@@ -18,6 +18,18 @@ header img {
   color: #f56906;
 }
 
+#cart-button {
+  width: 100px;
+  height: 40px;
+  font-size: 25px;
+  background: #f56906;
+  border-color: tomato;
+}
+
+#quantity {
+  text-align: right;
+}
+
 table {
   border-collapse: collapse;
   border : 1px solid gray;

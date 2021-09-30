@@ -8,6 +8,10 @@
   <p>
     Welcome to Expert-Soft training!
   </p>
+  <p>
+    <input id="cart-button" type="button"
+           onclick="location.href='${pageContext.servletContext.contextPath}/cart'" value="Cart"/>
+  </p>
   <form>
     <input name="query" value="${param.query}" placeholder="Search product...">
     <button>Search</button>
@@ -53,11 +57,11 @@
         </td>
         <td>
           <c:set var="error" value="${errors[product.id]}"/>
-          <input class="quantity" form="addItemToCart" name="quantity"
-            value="${not empty error ? paramValues['quantity'][status.index] : 1}"/>
+          <input id="quantity" form="addItemToCart" name="quantity"
+            value="${not empty error ? paramValues['quantity'][status.index] : 1}">
             <c:if test="${not empty error}">
               <div class="error">
-                ${errors[product.id]}
+                ${error}
               </div>
             </c:if>
           <input type="hidden" name="productId" value="${product.id}" form="addItemToCart"/>

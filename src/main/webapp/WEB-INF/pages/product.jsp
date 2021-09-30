@@ -46,7 +46,7 @@
       <tr>
         <td>Quantity</td>
         <td>
-          <input name="quantity" value="${not empty error ? param.quantity : 1}" pattern="\d+" class="quantity" required>
+          <input name="quantity" value="${not empty error ? param.quantity : 1}" class="quantity" pattern="\d+" required>
           <c:if test="${not empty error}">
             <div class="error">
               ${error}

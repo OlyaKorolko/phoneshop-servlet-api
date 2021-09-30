@@ -60,12 +60,12 @@ public class AddToCartServlet extends HttpServlet {
     private int parseQuantityString(HttpServletRequest request, String quantityString) {
         ParsePosition parsePosition = new ParsePosition(0);
         NumberFormat format = NumberFormat.getInstance(request.getLocale());
-        Number n = format.parse(quantityString, parsePosition);
+        Number quantityNumber = format.parse(quantityString, parsePosition);
         int quantity;
-        if (n == null || quantityString.length() != parsePosition.getIndex()) {
+        if (quantityNumber == null || quantityString.length() != parsePosition.getIndex()) {
             throw new NumberFormatException("Parsing failed: not a number");
         } else {
-            quantity = n.intValue();
+            quantity = quantityNumber.intValue();
             if (quantity <= 0) {
                 throw new NumberFormatException("Parsing failed: quantity should be >= 0");
             }

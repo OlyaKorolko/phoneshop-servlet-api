@@ -3,9 +3,9 @@ package com.es.phoneshop.service.impl;
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
-import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
+import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.service.CartService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 public class DefaultCartService implements CartService {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -38,28 +37,25 @@ public class DefaultCartService implements CartService {
 
     @Override
     public Cart getCart(HttpServletRequest request) {
-        readWriteLock.readLock().lock();
-        try {
+        synchronized (request.getSession()) {
             Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
             if (cart == null) {
                 request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart = new Cart());
             }
             return cart;
-        } finally {
-            readWriteLock.readLock().unlock();
         }
     }
 
     @Override
     public void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
-        readWriteLock.writeLock().lock();
-        try {
+        synchronized (cart) {
             Product product = productDao.getProduct(productId);
             Optional<CartItem> foundCartItem = findCartItem(cart, product);
             int foundItemQuantityInCart = foundCartItem.map(CartItem::getQuantity).orElse(0);
 
             if (product.getStock() < quantity + foundItemQuantityInCart) {
-                throw new OutOfStockException(product, product.getStock(), quantity + foundItemQuantityInCart);
+                throw new OutOfStockException("Out of stock, available: " + product.getStock() +
+                        ", requested: " + quantity + foundItemQuantityInCart);
             }
             if (foundCartItem.isPresent()) {
                 foundCartItem.get().setQuantity(foundItemQuantityInCart + quantity);
@@ -67,11 +63,8 @@ public class DefaultCartService implements CartService {
                 CartItem cartItem = new CartItem(product, quantity);
                 cart.getItems().add(cartItem);
             }
-            recalculateCardTotalQuantity(cart);
-            recalculateCartTotalCost(cart);
-        } finally {
-            readWriteLock.writeLock().unlock();
         }
+        recalculateCart(cart);
     }
 
     private Optional<CartItem> findCartItem(Cart cart, Product product) {
@@ -83,13 +76,13 @@ public class DefaultCartService implements CartService {
 
     @Override
     public void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
-        readWriteLock.writeLock().lock();
-        try {
+        synchronized (cart) {
             Product product = productDao.getProduct(productId);
             Optional<CartItem> foundCartItem = findCartItem(cart, product);
 
             if (product.getStock() < quantity) {
-                throw new OutOfStockException(product, product.getStock(), quantity);
+                throw new OutOfStockException("Out of stock, available: " + product.getStock() +
+                        ", requested: " + quantity);
             }
             if (foundCartItem.isPresent()) {
                 foundCartItem.get().setQuantity(quantity);
@@ -97,29 +90,28 @@ public class DefaultCartService implements CartService {
                 CartItem cartItem = new CartItem(product, quantity);
                 cart.getItems().add(cartItem);
             }
-            recalculateCardTotalQuantity(cart);
-            recalculateCartTotalCost(cart);
-        } finally {
-            readWriteLock.writeLock().unlock();
         }
+        recalculateCart(cart);
     }
 
     @Override
     public void delete(Cart cart, Long productId) {
-        cart.getItems().removeIf(cartItem -> cartItem.getProduct().getId().equals(productId));
-        recalculateCardTotalQuantity(cart);
-        recalculateCartTotalCost(cart);
+        synchronized (cart) {
+            cart.getItems().removeIf(cartItem -> cartItem.getProduct().getId().equals(productId));
+        }
+        recalculateCart(cart);
     }
 
-    private void recalculateCardTotalQuantity(Cart cart) {
-        cart.setTotalQuantity(cart.getItems().stream()
-                .mapToInt(CartItem::getQuantity)
-                .sum());
-    }
-
-    private void recalculateCartTotalCost(Cart cart) {
-        cart.setTotalCost(cart.getItems().stream()
-                .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add));
+    private void recalculateCart(Cart cart) {
+        synchronized (cart) {
+            cart.setTotalQuantity(cart.getItems().stream()
+                    .filter(cartItem -> cartItem.getProduct() != null)
+                    .mapToInt(CartItem::getQuantity)
+                    .sum());
+            cart.setTotalCost(cart.getItems().stream()
+                    .filter(cartItem -> cartItem.getProduct() != null)
+                    .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+        }
     }
 }
