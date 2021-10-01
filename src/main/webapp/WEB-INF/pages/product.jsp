@@ -22,42 +22,42 @@
   </c:if>
   <p>${product.description}</p>
   <form method="post">
-     <table>
-         <tr>
-           <td>Image</td>
-           <td>
-               <img class="product" src="${product.imageUrl}">
-           </td>
-         </tr>
-         <tr>
-           <td>Code</td>
-           <td>${product.code}</td>
-         </tr>
-         <tr>
-           <td>Price</td>
-           <td class="price">
-               <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
-           </td>
-         </tr>
-         <tr>
-            <td>Stock</td>
-            <td>${product.stock}</td>
-         </tr>
-         <tr>
-            <td>Quantity</td>
-            <td>
-                <input name="quantity" value="${not empty error ? param.quantity : 1}" pattern="\d+" class="quantity" required>
-                <c:if test="${not empty error}">
-                    <div class="error">
-                        ${error}
-                    </div>
-                </c:if>
-            </td>
-         </tr>
-     </table>
-     <p>
-        <button>Add to cart</button>
-     </p>
+    <table>
+      <tr>
+        <td>Image</td>
+        <td>
+          <img class="product" src="${product.imageUrl}">
+        </td>
+      </tr>
+      <tr>
+        <td>Code</td>
+        <td>${product.code}</td>
+      </tr>
+      <tr>
+        <td>Price</td>
+        <td class="price">
+          <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+        </td>
+      </tr>
+      <tr>
+        <td>Stock</td>
+        <td>${product.stock}</td>
+      </tr>
+      <tr>
+        <td>Quantity</td>
+        <td>
+          <input name="quantity" value="${not empty error ? param.quantity : 1}" class="quantity" pattern="\d+" required>
+          <c:if test="${not empty error}">
+            <div class="error">
+              ${error}
+            </div>
+          </c:if>
+        </td>
+      </tr>
+    </table>
+    <p>
+      <button>Add to cart</button>
+    </p>
   </form>
   <c:if test="${not empty view_history.getHistory()}">
       <p>Recently viewed</p>

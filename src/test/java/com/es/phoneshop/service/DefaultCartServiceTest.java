@@ -13,12 +13,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import java.math.BigDecimal;
-import java.util.Currency;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -34,16 +31,13 @@ public class DefaultCartServiceTest {
 
     private CartService cartService;
     private Cart cart;
-    private CartItem cartItem;
-    private Product product;
-    private Product product2;
 
     @Before
     public void setUp() {
         when(request.getSession()).thenReturn(session);
 
-        product = new Product("test", "", new BigDecimal(100), null, 100, null);
-        product2=new Product("test2", "", new BigDecimal(200), null, 200, null);
+        Product product = new Product("test", "", new BigDecimal(100), null, 100, null);
+        Product product2 = new Product("test2", "", new BigDecimal(200), null, 200, null);
         ProductDao productDao = ArrayListProductDao.getInstance();
         productDao.save(product);
         productDao.save(product2);
@@ -73,7 +67,7 @@ public class DefaultCartServiceTest {
     }
 
     @Test(expected = OutOfStockException.class)
-    public void addOutOfStock() throws OutOfStockException {
+    public void testAddOutOfStock() throws OutOfStockException {
         cartService.add(cart, 0L, 101);
     }
 }

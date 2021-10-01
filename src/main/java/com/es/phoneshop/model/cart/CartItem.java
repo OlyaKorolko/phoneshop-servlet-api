@@ -2,7 +2,10 @@ package com.es.phoneshop.model.cart;
 
 import com.es.phoneshop.model.product.Product;
 
-public class CartItem {
+import java.io.Serializable;
+
+public class CartItem implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Product product;
     private int quantity;
 
@@ -19,8 +22,8 @@ public class CartItem {
         return quantity;
     }
 
-    public void updateQuantity(int quantity) {
-        this.quantity += quantity;
+    public void setQuantity(int newQuantity) {
+        this.quantity = newQuantity;
     }
 
     @Override
