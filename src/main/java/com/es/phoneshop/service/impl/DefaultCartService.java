@@ -63,8 +63,8 @@ public class DefaultCartService implements CartService {
                 CartItem cartItem = new CartItem(product, quantity);
                 cart.getItems().add(cartItem);
             }
+            recalculateCart(cart);
         }
-        recalculateCart(cart);
     }
 
     private Optional<CartItem> findCartItem(Cart cart, Product product) {
@@ -90,28 +90,26 @@ public class DefaultCartService implements CartService {
                 CartItem cartItem = new CartItem(product, quantity);
                 cart.getItems().add(cartItem);
             }
+            recalculateCart(cart);
         }
-        recalculateCart(cart);
     }
 
     @Override
     public void delete(Cart cart, Long productId) {
         synchronized (cart) {
             cart.getItems().removeIf(cartItem -> cartItem.getProduct().getId().equals(productId));
+            recalculateCart(cart);
         }
-        recalculateCart(cart);
     }
 
     private void recalculateCart(Cart cart) {
-        synchronized (cart) {
-            cart.setTotalQuantity(cart.getItems().stream()
-                    .filter(cartItem -> cartItem.getProduct() != null)
-                    .mapToInt(CartItem::getQuantity)
-                    .sum());
-            cart.setTotalCost(cart.getItems().stream()
-                    .filter(cartItem -> cartItem.getProduct() != null)
-                    .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add));
-        }
+        cart.setTotalQuantity(cart.getItems().stream()
+                .filter(cartItem -> cartItem.getProduct() != null)
+                .mapToInt(CartItem::getQuantity)
+                .sum());
+        cart.setTotalCost(cart.getItems().stream()
+                .filter(cartItem -> cartItem.getProduct() != null)
+                .map(cartItem -> cartItem.getProduct().getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 }
