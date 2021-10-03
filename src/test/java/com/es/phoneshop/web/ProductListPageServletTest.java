@@ -42,7 +42,7 @@ public class ProductListPageServletTest {
 
         verify(request, times(3)).getParameter(anyString());
         verify(request).setAttribute(eq("products"), any());
-        verify(request).setAttribute(eq("viewHistory"), any());
+        verify(request).setAttribute(eq("view_history"), any());
         verify(requestDispatcher).forward(request, response);
     }
 }

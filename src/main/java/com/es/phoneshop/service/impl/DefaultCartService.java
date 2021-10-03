@@ -102,7 +102,8 @@ public class DefaultCartService implements CartService {
         }
     }
 
-    private void recalculateCart(Cart cart) {
+    @Override
+    public void recalculateCart(Cart cart) {
         cart.setTotalQuantity(cart.getItems().stream()
                 .filter(cartItem -> cartItem.getProduct() != null)
                 .mapToInt(CartItem::getQuantity)
