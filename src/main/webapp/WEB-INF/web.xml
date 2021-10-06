@@ -11,7 +11,7 @@
     </context-param>
 
     <listener>
-        <listener-class>com.es.phoneshop.web.DemoDataServletContextListener</listener-class>
+        <listener-class>com.es.phoneshop.web.listener.DemoDataServletContextListener</listener-class>
     </listener>
 
     <servlet>
@@ -51,6 +51,24 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>checkout</servlet-name>
+        <servlet-class>com.es.phoneshop.web.CheckoutPageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>checkout</servlet-name>
+        <url-pattern>/checkout</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>orderOverview</servlet-name>
+        <servlet-class>com.es.phoneshop.web.OrderOverviewPageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>orderOverview</servlet-name>
+        <url-pattern>/order/overview/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>deleteCartItem</servlet-name>
         <servlet-class>com.es.phoneshop.web.DeleteCartItemServlet</servlet-class>
     </servlet>
@@ -58,6 +76,15 @@
         <servlet-name>deleteCartItem</servlet-name>
         <url-pattern>/cart/delete-cart-item/*</url-pattern>
     </servlet-mapping>
+
+    <filter>
+        <filter-name>dosFilter</filter-name>
+        <filter-class>com.es.phoneshop.web.filter.DosFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>dosFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <servlet>
         <servlet-name>miniCart</servlet-name>
@@ -86,6 +113,11 @@
     <error-page>
         <location>/WEB-INF/pages/error.jsp</location>
         <error-code>500</error-code>
+    </error-page>
+
+    <error-page>
+        <location>/WEB-INF/pages/errorPageNotFound.jsp</location>
+        <error-code>404</error-code>
     </error-page>
 
 </web-app>

@@ -1,13 +1,15 @@
 package com.es.phoneshop.model.cart;
 
+import com.es.phoneshop.model.BaseEntity;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cart implements Serializable {
+public class Cart extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final List<CartItem> items;
+    private List<CartItem> items;
     private int totalQuantity;
     private BigDecimal totalCost;
 
@@ -17,6 +19,10 @@ public class Cart implements Serializable {
 
     public List<CartItem> getItems() {
         return items;
+    }
+
+    public void setItems(List<CartItem> items) {
+        this.items = items;
     }
 
     public int getTotalQuantity() {

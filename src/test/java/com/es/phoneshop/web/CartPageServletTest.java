@@ -28,8 +28,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CartPageServletTest {
     @Mock
-    private CartService cartService;
-    @Mock
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;

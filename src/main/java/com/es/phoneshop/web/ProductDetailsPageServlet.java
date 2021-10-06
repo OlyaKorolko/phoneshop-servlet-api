@@ -44,10 +44,10 @@ public class ProductDetailsPageServlet extends HttpServlet {
             return;
         }
         request.setAttribute(String.valueOf(ProductParam.VIEW_HISTORY).toLowerCase(), viewHistoryService.getViewHistory(request));
-        request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(), productDao.getProduct(productId));
+        request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(), productDao.getItem(productId));
         request.setAttribute(String.valueOf(CartParam.CART).toLowerCase(), cartService.getCart(request));
         request.getRequestDispatcher(PRODUCT_DETAILS_PATH).forward(request, response);
-        viewHistoryService.addToHistory(viewHistoryService.getViewHistory(request).getHistory(), productDao.getProduct(productId));
+        viewHistoryService.addToHistory(viewHistoryService.getViewHistory(request).getHistory(), productDao.getItem(productId));
     }
 
     @Override

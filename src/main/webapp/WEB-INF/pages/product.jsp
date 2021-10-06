@@ -7,9 +7,6 @@
   <p>
     <input type="button" onclick="location.href='${pageContext.servletContext.contextPath}/products'" value="Back"/>
   </p>
-  <p>
-    Cart: ${cart}
-  </p>
   <c:if test="${not empty param.message}">
     <div class="success">
       ${param.message}

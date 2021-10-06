@@ -1,5 +1,8 @@
 package com.es.phoneshop.model.product;
 
+import com.es.phoneshop.model.BaseEntity;
+import com.es.phoneshop.model.cart.CartItem;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -7,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
-public class Product implements Serializable {
+public class Product extends BaseEntity implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private String code;
@@ -111,5 +114,19 @@ public class Product implements Serializable {
 
     public List<PriceHistoryEntry> getPriceHistory() {
         return priceHistory;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Product product;
+        try {
+            product = (Product) super.clone();
+        } catch (CloneNotSupportedException e) {
+            product = new Product(this.id, this.code, this.description, this.price, this.currency, this.stock, this.imageUrl);
+        }
+        for (int i = 0; i < priceHistory.size(); i++) {
+            product.priceHistory.set(i, (PriceHistoryEntry) this.priceHistory.get(i).clone());
+        }
+        return product;
     }
 }

@@ -1,7 +1,7 @@
 package com.es.phoneshop.dao.impl;
 
+import com.es.phoneshop.dao.AbstractDao;
 import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.enums.SortField;
 import com.es.phoneshop.enums.SortOrder;
 import com.es.phoneshop.model.product.Product;
@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
-public class ArrayListProductDao implements ProductDao {
+public class ArrayListProductDao extends AbstractDao<Product> implements ProductDao {
     private long maxId;
     private final List<Product> products;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -30,21 +30,7 @@ public class ArrayListProductDao implements ProductDao {
 
     private ArrayListProductDao() {
         maxId = 0;
-        products = new ArrayList<>();
-    }
-
-    @Override
-    public Product getProduct(Long id) {
-        readWriteLock.readLock().lock();
-        try {
-            return products.stream()
-                    .filter(this::checkProductInStock)
-                    .filter(pr -> pr.getId().equals(id))
-                    .findAny()
-                    .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + " was not found"));
-        } finally {
-            readWriteLock.readLock().unlock();
-        }
+        products = super.getObjects();
     }
 
     private boolean checkProductInStock(Product product) {

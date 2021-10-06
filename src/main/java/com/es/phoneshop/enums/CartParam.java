@@ -2,5 +2,7 @@ package com.es.phoneshop.enums;
 
 public enum CartParam {
     CART,
-    ERRORS
+    ERRORS,
+    ORDER,
+    PAYMENT_METHODS
 }
