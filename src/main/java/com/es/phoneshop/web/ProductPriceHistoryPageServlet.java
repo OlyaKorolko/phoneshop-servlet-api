@@ -23,7 +23,7 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId = request.getPathInfo();
-        request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(), productDao.getProduct(Long.valueOf(productId.substring(1))));
+        request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(), productDao.getItem(Long.valueOf(productId.substring(1))));
         request.getRequestDispatcher(PRICE_HISTORY_PATH).forward(request, response);
     }
 }

@@ -11,11 +11,8 @@ import com.es.phoneshop.service.CartService;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultCartService implements CartService {
-    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     public static final String CART_SESSION_ATTRIBUTE = "cart";
     private static volatile CartService instance;
     private final ProductDao productDao;
@@ -49,7 +46,7 @@ public class DefaultCartService implements CartService {
     @Override
     public void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
         synchronized (cart) {
-            Product product = productDao.getProduct(productId);
+            Product product = productDao.getItem(productId);
             Optional<CartItem> foundCartItem = findCartItem(cart, product);
             int foundItemQuantityInCart = foundCartItem.map(CartItem::getQuantity).orElse(0);
 
@@ -77,7 +74,7 @@ public class DefaultCartService implements CartService {
     @Override
     public void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
         synchronized (cart) {
-            Product product = productDao.getProduct(productId);
+            Product product = productDao.getItem(productId);
             Optional<CartItem> foundCartItem = findCartItem(cart, product);
 
             if (product.getStock() < quantity) {
@@ -99,6 +96,18 @@ public class DefaultCartService implements CartService {
         synchronized (cart) {
             cart.getItems().removeIf(cartItem -> cartItem.getProduct().getId().equals(productId));
             recalculateCart(cart);
+        }
+    }
+
+    @Override
+    public void removeCart(HttpServletRequest request) {
+        synchronized (request.getSession()) {
+            Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
+            if (cart != null) {
+                /*cart.getItems().clear();
+                recalculateCart(cart);*/
+                request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, null);
+            }
         }
     }
 

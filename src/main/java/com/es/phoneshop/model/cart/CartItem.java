@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class CartItem implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
-    private final Product product;
+    private Product product;
     private int quantity;
 
     public CartItem(Product product, int quantity) {
@@ -17,6 +17,7 @@ public class CartItem implements Serializable, Cloneable {
     public Product getProduct() {
         return product;
     }
+
 
     public int getQuantity() {
         return quantity;
@@ -35,6 +36,13 @@ public class CartItem implements Serializable, Cloneable {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        CartItem cartItem;
+        try {
+            cartItem = (CartItem) super.clone();
+        } catch (CloneNotSupportedException e) {
+            cartItem = new CartItem(this.product, this.quantity);
+        }
+        cartItem.product = (Product) this.product.clone();
+        return cartItem;
     }
 }

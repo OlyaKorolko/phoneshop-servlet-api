@@ -1,6 +1,6 @@
 package com.es.phoneshop.exception;
 
-public class OrderNotFoundException extends RuntimeException {
+public class OrderNotFoundException extends BaseEntityNotFoundException {
     public OrderNotFoundException(String message) {
         super(message);
     }

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.Objects;
 
-public class PriceHistoryEntry implements Serializable {
+public class PriceHistoryEntry implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
     private final LocalDateTime priceChangeDate;
     private final BigDecimal price;
@@ -50,5 +50,10 @@ public class PriceHistoryEntry implements Serializable {
                 "priceChangeDate=" + priceChangeDate +
                 ", price=" + price +
                 '}';
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

@@ -68,8 +68,19 @@
       <table>
         <tags:orderFormRow name="firstName" label="First name" order="${order}" errors="${errors}"></tags:orderFormRow>
         <tags:orderFormRow name="lastName" label="Last name" order="${order}" errors="${errors}"></tags:orderFormRow>
-        <tags:orderFormRow name="phone" label="Phone" order="${order}" errors="${errors}"></tags:orderFormRow>
-        <tags:orderFormRow name="deliveryDate" label="Delivery date" order="${order}" errors="${errors}"></tags:orderFormRow>
+        <tr>
+          <td>Phone<span style="color:red">*</span></td>
+          <td>
+            <c:set var="error" value="${errors[phone]}"/>
+            <input name="phone" value="${not empty error ? param[phone] : order[phone]}" type="tel" pattern="(\+?(\d){8,})|((\d){2,}-?\s?){3,}?"/>
+            <c:if test="${not empty error}">
+              <div class="error">
+                ${error}
+              </div>
+            </c:if>
+          </td>
+        </tr>
+        <tags:orderFormRow name="deliveryDate" label="Delivery date" type="date" order="${order}" errors="${errors}"></tags:orderFormRow>
         <tags:orderFormRow name="deliveryAddress" label="Delivery address" order="${order}" errors="${errors}"></tags:orderFormRow>
         <tr>
           <td>Payment method<span style="color:red">*</span></td>

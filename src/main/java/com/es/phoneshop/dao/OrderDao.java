@@ -5,7 +5,7 @@ import com.es.phoneshop.model.order.Order;
 import java.util.List;
 
 public interface OrderDao {
-    Order getOrder(Long id);
+    Order getItem(Long id);
 
     Order getOrderBySecureId(String id);
 

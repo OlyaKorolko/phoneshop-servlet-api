@@ -5,8 +5,11 @@ import com.es.phoneshop.model.product.Product;
 import java.util.List;
 
 public interface ProductDao {
-    Product getProduct(Long id);
+    Product getItem(Long id);
+
     List<Product> findProducts(String query, String sortField, String sortOrder);
+
     void save(Product product);
+
     void delete(Long id);
 }

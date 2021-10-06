@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
@@ -56,7 +57,7 @@ public class CheckoutPageServlet extends HttpServlet {
                 order::setDeliveryAddress);
         setPaymentMethod(request, parseParameter(OrderParam.PAYMENT_METHOD), errors, order);
 
-        handleErrors(request, response, errors, order);
+        placeOrder(request, response, errors, order);
     }
 
     private String parseParameter(final Enum<?> param) {
@@ -90,9 +91,14 @@ public class CheckoutPageServlet extends HttpServlet {
         } else {
             try {
                 LocalDate dateValue = LocalDate.parse(value);
+                if (dateValue.isBefore(LocalDate.now())) {
+                    throw new IllegalArgumentException("Date cannot be earlier than now");
+                }
                 consumer.accept(dateValue);
             } catch (DateTimeParseException e) {
                 errors.put(parameter, "Invalid delivery date");
+            } catch (IllegalArgumentException e) {
+                errors.put(parameter, e.getMessage());
             }
         }
     }
@@ -110,12 +116,11 @@ public class CheckoutPageServlet extends HttpServlet {
         }
     }
 
-    private void handleErrors(HttpServletRequest request, HttpServletResponse response, Map<String, String> errors,
+    private void placeOrder(HttpServletRequest request, HttpServletResponse response, Map<String, String> errors,
                               Order order) throws IOException, ServletException {
         if (errors.isEmpty()) {
             orderService.placeOrder(order);
-            cartService.getCart(request).getItems().clear();
-            cartService.recalculateCart(cartService.getCart(request));
+            cartService.removeCart(request);
             response.sendRedirect(request.getContextPath() + "/order/overview/" + order.getSecureId());
         } else {
             request.setAttribute(String.valueOf(CartParam.ERRORS).toLowerCase(), errors);

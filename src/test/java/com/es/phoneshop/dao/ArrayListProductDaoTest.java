@@ -3,7 +3,7 @@ package com.es.phoneshop.dao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.Product;
-import com.es.phoneshop.web.DemoDataServletContextListener;
+import com.es.phoneshop.web.listener.DemoDataServletContextListener;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -104,7 +104,7 @@ public class ArrayListProductDaoTest {
 
     @Test(expected = ProductNotFoundException.class)
     public void testGetProductWithNullId() {
-        productDao.getProduct(null);
+        productDao.getItem(null);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ArrayListProductDaoTest {
         productDao.save(product);
 
         assertTrue(product.getId() > 0);
-        Product result = productDao.getProduct(product.getId());
+        Product result = productDao.getItem(product.getId());
         assertEquals("sgs1", result.getCode());
     }
 
@@ -124,7 +124,7 @@ public class ArrayListProductDaoTest {
         Product product = new Product("zero-stock-test", "Samsung Galaxy S", new BigDecimal(100), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
 
-        productDao.getProduct(product.getId());
+        productDao.getItem(product.getId());
     }
 
     @Test(expected = ProductNotFoundException.class)
@@ -134,6 +134,6 @@ public class ArrayListProductDaoTest {
         productDao.save(product);
 
         productDao.delete(product.getId());
-        productDao.getProduct(product.getId());
+        productDao.getItem(product.getId());
     }
 }
