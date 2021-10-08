@@ -65,6 +65,18 @@ ul {
    margin: 5px;
 }
 
+form {
+  border:black;
+  border-width:2px;
+  border-style:solid;
+  width: 500px;
+  padding: 10px;
+}
+
+.search {
+  border-style: hidden;
+}
+
 /* Page specific styles */
 body.product-list {
 

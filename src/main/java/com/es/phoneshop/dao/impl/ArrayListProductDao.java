@@ -2,10 +2,13 @@ package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.AbstractDao;
 import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.enums.AdvancedSortParam;
+import com.es.phoneshop.enums.Selector;
 import com.es.phoneshop.enums.SortField;
 import com.es.phoneshop.enums.SortOrder;
 import com.es.phoneshop.model.product.Product;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -94,6 +97,49 @@ public class ArrayListProductDao extends AbstractDao<Product> implements Product
             }
             if (sortField != null && !sortField.isEmpty() && sortOrder != null && !sortOrder.isEmpty()) {
                 fetchedProducts = sortByField(fetchedProducts, sortField, sortOrder);
+            }
+            return fetchedProducts;
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+    }
+
+    private List<Product> sortByQuery(String query, Selector wordSelector, List<Product> products) {
+        List<String> tokens = Arrays.asList(query.split("\\s"));
+        if (wordSelector == Selector.ANY_WORD) {
+            return products.stream()
+                    .filter(product -> tokens.stream()
+                            .anyMatch(token -> product.getDescription() != null && product.getDescription().contains(token)))
+                    .collect(Collectors.toList());
+        } else if (wordSelector == Selector.ALL_WORDS) {
+            return products.stream()
+                    .filter(product -> tokens.stream()
+                            .allMatch(token -> product.getDescription() != null && product.getDescription().contains(token)))
+                    .collect(Collectors.toList());
+        }
+        return products;
+    }
+
+    @Override
+    public List<Product> findProducts(String query, Selector wordSelector, BigDecimal minPrice, BigDecimal maxPrice) {
+        readWriteLock.readLock().lock();
+        List<Product> fetchedProducts;
+        try {
+            fetchedProducts = products.stream()
+                    .filter(this::checkProductInStock)
+                    .collect(Collectors.toList());
+            if (query != null && !query.isEmpty()) {
+                fetchedProducts = sortByQuery(query, wordSelector, fetchedProducts);
+            }
+            if (minPrice != null) {
+                fetchedProducts = fetchedProducts.stream()
+                        .filter(product -> product.getPrice().compareTo(minPrice) >= 0)
+                        .collect(Collectors.toList());
+            }
+            if (maxPrice != null) {
+                fetchedProducts = fetchedProducts.stream()
+                        .filter(product -> product.getPrice().compareTo(maxPrice) <= 0)
+                        .collect(Collectors.toList());
             }
             return fetchedProducts;
         } finally {
