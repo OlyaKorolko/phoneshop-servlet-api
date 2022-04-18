@@ -2,7 +2,10 @@ package com.es.phoneshop.model.product;
 
 import com.es.phoneshop.model.BaseEntity;
 import com.es.phoneshop.model.cart.CartItem;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,7 +13,10 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
+@Getter
+@Setter
 public class Product extends BaseEntity implements Serializable, Cloneable {
+    @Serial
     private static final long serialVersionUID = 1L;
     private Long id;
     private String code;
@@ -53,67 +59,6 @@ public class Product extends BaseEntity implements Serializable, Cloneable {
         this.imageUrl = path + imageUrl;
         priceHistory = new ArrayList<>();
         priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-        priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
-    }
-
-    public Currency getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public List<PriceHistoryEntry> getPriceHistory() {
-        return priceHistory;
     }
 
     @Override

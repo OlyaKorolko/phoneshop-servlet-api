@@ -1,20 +1,20 @@
 package com.es.phoneshop.service.impl;
 
 import com.es.phoneshop.service.DosProtectionService;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DefaultDosProtectionService implements DosProtectionService {
     private static final long NUMBER_THRESHOLD = 20;
     private static final long TIME_THRESHOLD_IN_MILLI = 60000;
     private static volatile DosProtectionService instance;
     private final Map<String, ConcurrentLinkedDeque<Date>> timestampMap = new ConcurrentHashMap<>();
-
-    private DefaultDosProtectionService() {
-    }
 
     public static synchronized DosProtectionService getInstance() {
         if (instance == null) {

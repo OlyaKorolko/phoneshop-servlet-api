@@ -30,8 +30,10 @@ public class ProductListPageServlet extends HttpServlet {
         String query = request.getParameter(String.valueOf(SortParam.QUERY).toLowerCase());
         String sortField = request.getParameter(String.valueOf(SortParam.SORT).toLowerCase());
         String sortOrder = request.getParameter(String.valueOf(SortParam.ORDER).toLowerCase());
-        request.setAttribute(String.valueOf(ProductParam.PRODUCTS).toLowerCase(), productDao.findProducts(query, sortField, sortOrder));
-        request.setAttribute(String.valueOf(ProductParam.VIEW_HISTORY).toLowerCase(), viewHistoryService.getViewHistory(request));
+        request.setAttribute(String.valueOf(ProductParam.PRODUCTS).toLowerCase(),
+                productDao.findProducts(query, sortField, sortOrder));
+        request.setAttribute(String.valueOf(ProductParam.VIEW_HISTORY).toLowerCase(),
+                viewHistoryService.getViewHistory(request));
         request.getRequestDispatcher(PRODUCTS_PATH).forward(request, response);
     }
 

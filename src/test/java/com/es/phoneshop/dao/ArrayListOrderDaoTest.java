@@ -48,12 +48,12 @@ public class ArrayListOrderDaoTest {
 
     @Test
     public void testGetOrder() {
-        assertEquals(order.getId(), orderDao.getOrder(0L).getId());
+        assertEquals(order.getId(), orderDao.getItem(0L).getId());
     }
 
     @Test(expected = OrderNotFoundException.class)
     public void testGetOrderNotFound() {
-        orderDao.getOrder(12L);
+        orderDao.getItem(12L);
     }
 
     @Test

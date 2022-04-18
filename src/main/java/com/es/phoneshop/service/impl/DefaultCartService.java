@@ -104,8 +104,6 @@ public class DefaultCartService implements CartService {
         synchronized (request.getSession()) {
             Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
             if (cart != null) {
-                /*cart.getItems().clear();
-                recalculateCart(cart);*/
                 request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, null);
             }
         }
