@@ -106,18 +106,18 @@
 
 
     <error-page>
-        <location>/WEB-INF/pages/errorProductNotFound.jsp</location>
         <exception-type>com.es.phoneshop.exception.ProductNotFoundException</exception-type>
+        <location>/WEB-INF/pages/errorProductNotFound.jsp</location>
     </error-page>
 
     <error-page>
-        <location>/WEB-INF/pages/error.jsp</location>
         <error-code>500</error-code>
+        <location>/WEB-INF/pages/error.jsp</location>
     </error-page>
 
     <error-page>
-        <location>/WEB-INF/pages/errorPageNotFound.jsp</location>
         <error-code>404</error-code>
+        <location>/WEB-INF/pages/errorPageNotFound.jsp</location>
     </error-page>
 
 </web-app>

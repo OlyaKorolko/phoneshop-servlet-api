@@ -12,6 +12,7 @@ import java.util.Currency;
 import java.util.List;
 
 public class DemoDataServletContextListener implements ServletContextListener {
+    public static final String PARAMETER = "insertDemoData";
     private final ProductDao productDao;
 
     public DemoDataServletContextListener() {
@@ -21,15 +22,10 @@ public class DemoDataServletContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         boolean insertDemoData =
-                Boolean.parseBoolean(servletContextEvent.getServletContext().getInitParameter("insertDemoData"));
+                Boolean.parseBoolean(servletContextEvent.getServletContext().getInitParameter(PARAMETER));
         if (insertDemoData) {
             getSampleProducts().forEach(productDao::save);
         }
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-
     }
 
     public List<Product> getSampleProducts() {

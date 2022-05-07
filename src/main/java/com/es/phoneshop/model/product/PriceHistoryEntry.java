@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.Currency;
 
 @AllArgsConstructor
-@Getter
 @Data
 public class PriceHistoryEntry implements Serializable, Cloneable {
     @Serial

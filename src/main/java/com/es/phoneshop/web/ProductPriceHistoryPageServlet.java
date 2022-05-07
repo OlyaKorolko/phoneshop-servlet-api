@@ -3,6 +3,7 @@ package com.es.phoneshop.web;
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.enums.ProductParam;
+import com.es.phoneshop.model.product.Product;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,8 +23,11 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String productId = request.getPathInfo();
-        request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(), productDao.getItem(Long.valueOf(productId.substring(1))));
+        request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(), getProduct(request));
         request.getRequestDispatcher(PRICE_HISTORY_PATH).forward(request, response);
+    }
+
+    private Product getProduct(HttpServletRequest request) {
+        return productDao.getItem(Long.valueOf(request.getPathInfo().substring(1)));
     }
 }

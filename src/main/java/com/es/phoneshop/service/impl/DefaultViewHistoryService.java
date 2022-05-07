@@ -3,12 +3,15 @@ package com.es.phoneshop.service.impl;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.viewHistory.ViewHistory;
 import com.es.phoneshop.service.ViewHistoryService;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DefaultViewHistoryService implements ViewHistoryService {
     private static volatile ViewHistoryService instance;
     private static final String VIEW_HISTORY_SESSION_ATTRIBUTE = "viewHistory";

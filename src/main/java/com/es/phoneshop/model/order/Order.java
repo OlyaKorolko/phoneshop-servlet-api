@@ -3,6 +3,7 @@ package com.es.phoneshop.model.order;
 import com.es.phoneshop.enums.PaymentMethod;
 import com.es.phoneshop.model.cart.Cart;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class Order extends Cart {
     private Long id;
     private String secureId;
-    private BigDecimal subtotalCost;
+    private BigDecimal subtotalCost = BigDecimal.ZERO;
     private BigDecimal deliveryCost;
     private String firstName;
     private String lastName;
@@ -22,9 +23,4 @@ public class Order extends Cart {
     private LocalDate deliveryDate;
     private String deliveryAddress;
     private PaymentMethod paymentMethod;
-
-    public Order() {
-        this.subtotalCost = BigDecimal.ZERO;
-        setItems(new ArrayList<>());
-    }
 }

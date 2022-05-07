@@ -51,10 +51,10 @@ public class DefaultOrderServiceTest {
 
     @Test
     public void testPlaceOrder() {
-        Order order = new Order();
-        order.setItems(cart.getItems());
-        orderService.placeOrder(order);
-        assertNotNull(order.getSecureId());
-        assertEquals(order.getId(), orderDao.getOrderBySecureId(order.getSecureId()).getId());
+        Order newOrder = new Order();
+        newOrder.setItems(cart.getItems());
+        orderService.placeOrder(newOrder);
+        assertNotNull(newOrder.getSecureId());
+        assertEquals(newOrder.getId(), orderDao.getOrderBySecureId(newOrder.getSecureId()).getId());
     }
 }

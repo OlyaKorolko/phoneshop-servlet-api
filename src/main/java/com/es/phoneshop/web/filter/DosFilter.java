@@ -10,11 +10,11 @@ import java.util.Date;
 
 public class DosFilter implements Filter {
     private DosProtectionService dosProtectionService;
+    private static final int STATUS = 429;
 
     @Override
     public void init(FilterConfig filterConfig) {
         dosProtectionService = DefaultDosProtectionService.getInstance();
-
     }
 
     @Override
@@ -23,12 +23,7 @@ public class DosFilter implements Filter {
         if (dosProtectionService.isAllowed(servletRequest.getRemoteAddr(), new Date())) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
-            ((HttpServletResponse)servletResponse).setStatus(429);
+            ((HttpServletResponse) servletResponse).setStatus(STATUS);
         }
-    }
-
-    @Override
-    public void destroy() {
-
     }
 }

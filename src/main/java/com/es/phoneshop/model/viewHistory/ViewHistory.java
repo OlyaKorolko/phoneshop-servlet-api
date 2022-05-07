@@ -8,10 +8,6 @@ import java.util.List;
 
 @Getter
 public class ViewHistory {
-    private final List<Product> history;
+    private final List<Product> history = new ArrayList<>(CAPACITY);
     public static final int CAPACITY = 3;
-
-    public ViewHistory() {
-        this.history = new ArrayList<>(CAPACITY);
-    }
 }

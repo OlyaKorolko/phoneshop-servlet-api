@@ -15,6 +15,7 @@ import java.io.IOException;
 
 public class OrderOverviewPageServlet extends HttpServlet {
     private static final String ORDER_OVERVIEW_PATH = "/WEB-INF/pages/orderOverview.jsp";
+    private static final int ERROR_CODE = 500;
     private OrderDao orderDao;
 
     @Override
@@ -31,7 +32,7 @@ public class OrderOverviewPageServlet extends HttpServlet {
             order = orderDao.getOrderBySecureId(secureOrderId);
         } catch (OrderNotFoundException e) {
             request.setAttribute(String.valueOf(ProductParam.ERROR).toLowerCase(), e.getMessage());
-            response.sendError(500);
+            response.sendError(ERROR_CODE);
             return;
         }
         request.setAttribute(String.valueOf(CartParam.ORDER).toLowerCase(), order);

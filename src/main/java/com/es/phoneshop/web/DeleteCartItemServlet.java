@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class DeleteCartItemServlet extends HttpServlet {
+    private static final String ERROR_MESSAGE = "Parsing failed: invalid product number";
+    private static final String CART_MESSAGE = "/cart?message=Cart item was successfully removed";
+    private static final int ERROR_CODE = 500;
     private CartService cartService;
 
     @Override
@@ -27,10 +30,10 @@ public class DeleteCartItemServlet extends HttpServlet {
         try {
             cartService.delete(cart, Long.parseLong(productsId));
         } catch (NumberFormatException e) {
-            request.setAttribute(String.valueOf(ProductParam.ERROR).toLowerCase(), "Parsing failed: invalid product number");
-            response.sendError(500);
+            request.setAttribute(String.valueOf(ProductParam.ERROR).toLowerCase(), ERROR_MESSAGE);
+            response.sendError(ERROR_CODE);
             return;
         }
-        response.sendRedirect(request.getContextPath() + "/cart?message=Cart item was successfully removed");
+        response.sendRedirect(request.getContextPath() + CART_MESSAGE);
     }
 }

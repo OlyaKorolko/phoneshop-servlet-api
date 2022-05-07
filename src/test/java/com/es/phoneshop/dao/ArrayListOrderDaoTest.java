@@ -1,7 +1,7 @@
 package com.es.phoneshop.dao;
 
 import com.es.phoneshop.dao.impl.ArrayListOrderDao;
-import com.es.phoneshop.exception.OrderNotFoundException;
+import com.es.phoneshop.exception.BaseEntityNotFoundException;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.order.Order;
 import com.es.phoneshop.model.product.Product;
@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -51,7 +50,7 @@ public class ArrayListOrderDaoTest {
         assertEquals(order.getId(), orderDao.getItem(0L).getId());
     }
 
-    @Test(expected = OrderNotFoundException.class)
+    @Test(expected = BaseEntityNotFoundException.class)
     public void testGetOrderNotFound() {
         orderDao.getItem(12L);
     }

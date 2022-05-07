@@ -7,6 +7,8 @@ import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.order.Order;
 import com.es.phoneshop.service.OrderService;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -14,13 +16,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DefaultOrderService implements OrderService {
-    private final OrderDao orderDao;
+    private final OrderDao orderDao = ArrayListOrderDao.getInstance();
     private static volatile OrderService instance;
-
-    private DefaultOrderService() {
-        orderDao = ArrayListOrderDao.getInstance();
-    }
 
     public static synchronized OrderService getInstance() {
         if (instance == null) {

@@ -25,6 +25,4 @@ public class MiniCartServlet extends HttpServlet {
         request.setAttribute(String.valueOf(CartParam.CART).toLowerCase(), cartService.getCart(request));
         request.getRequestDispatcher(MINI_CART_PATH).include(request, response);
     }
-
-
 }

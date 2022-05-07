@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,13 +31,12 @@ public class OrderOverviewPageServletTest {
     private RequestDispatcher requestDispatcher;
 
     private OrderOverviewPageServlet servlet;
-    private UUID id;
+    private final UUID id = UUID.randomUUID();
     private Order order;
 
     @Before
     public void setUp() throws Exception {
         servlet = new OrderOverviewPageServlet();
-        id = UUID.randomUUID();
         order = new Order();
         order.setSecureId(String.valueOf(id));
 

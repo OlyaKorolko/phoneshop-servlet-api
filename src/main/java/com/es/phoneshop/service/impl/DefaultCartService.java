@@ -7,19 +7,18 @@ import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.service.CartService;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DefaultCartService implements CartService {
     public static final String CART_SESSION_ATTRIBUTE = "cart";
     private static volatile CartService instance;
-    private final ProductDao productDao;
-
-    private DefaultCartService() {
-        productDao = ArrayListProductDao.getInstance();
-    }
+    private final ProductDao productDao = ArrayListProductDao.getInstance();
 
     public static synchronized CartService getInstance() {
         if (instance == null) {
@@ -78,8 +77,7 @@ public class DefaultCartService implements CartService {
             Optional<CartItem> foundCartItem = findCartItem(cart, product);
 
             if (product.getStock() < quantity) {
-                throw new OutOfStockException("Out of stock, available: " + product.getStock() +
-                        ", requested: " + quantity);
+                throw new OutOfStockException("Out of stock, available: " + product.getStock() + ", requested: " + quantity);
             }
             if (foundCartItem.isPresent()) {
                 foundCartItem.get().setQuantity(quantity);

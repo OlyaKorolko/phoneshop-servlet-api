@@ -1,8 +1,8 @@
 package com.es.phoneshop.model.product;
 
 import com.es.phoneshop.model.BaseEntity;
-import com.es.phoneshop.model.cart.CartItem;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
@@ -15,28 +15,19 @@ import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Product extends BaseEntity implements Serializable, Cloneable {
     @Serial
     private static final long serialVersionUID = 1L;
+    private static final String path = "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer";
     private Long id;
     private String code;
     private String description;
-    /**
-     * null means there is no price because the product is outdated or new
-     */
     private BigDecimal price;
-    /**
-     * can be null if the price is null
-     */
     private Currency currency;
     private int stock;
-    private final String path = "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer";
     private String imageUrl;
-    private final List<PriceHistoryEntry> priceHistory;
-
-    public Product() {
-        priceHistory = new ArrayList<>();
-    }
+    private final List<PriceHistoryEntry> priceHistory = new ArrayList<>();
 
     public Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
         this.id = id;
@@ -46,7 +37,6 @@ public class Product extends BaseEntity implements Serializable, Cloneable {
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = path + imageUrl;
-        priceHistory = new ArrayList<>();
         priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
     }
 
@@ -57,7 +47,6 @@ public class Product extends BaseEntity implements Serializable, Cloneable {
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = path + imageUrl;
-        priceHistory = new ArrayList<>();
         priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
     }
 

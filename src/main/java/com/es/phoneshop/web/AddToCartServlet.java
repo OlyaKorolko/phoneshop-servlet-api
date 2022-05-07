@@ -1,8 +1,9 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.dto.AddToCartDto;
 import com.es.phoneshop.enums.CartParam;
-import com.es.phoneshop.enums.ProductParam;
 import com.es.phoneshop.exception.OutOfStockException;
+import com.es.phoneshop.mapper.AddToCartMapper;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.service.CartService;
 import com.es.phoneshop.service.impl.DefaultCartService;
@@ -12,44 +13,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AddToCartServlet extends HttpServlet {
+    public static final String CART_MESSAGE = "/products?message=Cart was successfully updated";
+    public static final String PRODUCTS_PATH = "/products";
     private CartService cartService;
+    private AddToCartMapper addToCartMapper;
 
     @Override
     public void init() throws ServletException {
         super.init();
         cartService = DefaultCartService.getInstance();
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String productIdString = request.getPathInfo().substring(1);
-        String[] productsIdsString = request.getParameterValues("productId");
-        String[] quantityStrings = request.getParameterValues(String.valueOf(ProductParam.QUANTITY).toLowerCase());
-        String quantityString;
-        Map<Long, String> errors = new HashMap<>();
-        int quantity;
-        long productId = -1L;
-        try {
-            productId = Long.parseLong(productIdString);
-            quantityString = findQuantityString(productsIdsString, quantityStrings, productIdString);
-            quantity = parseQuantityString(request, quantityString);
-            Cart cart = cartService.getCart(request);
-            cartService.add(cart, productId, quantity);
-        } catch (NumberFormatException | OutOfStockException ex) {
-            errors.put(productId, ex.getMessage());
-        }
-        if (errors.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/products?message=Cart was successfully updated");
-        } else {
-            request.setAttribute(String.valueOf(CartParam.ERRORS).toLowerCase(), errors);
-            request.getRequestDispatcher("/products").forward(request, response);
-        }
+        addToCartMapper = new AddToCartMapper();
     }
 
     @Override
@@ -57,29 +32,20 @@ public class AddToCartServlet extends HttpServlet {
         doPost(req, resp);
     }
 
-    private int parseQuantityString(HttpServletRequest request, String quantityString) {
-        ParsePosition parsePosition = new ParsePosition(0);
-        NumberFormat format = NumberFormat.getInstance(request.getLocale());
-        Number quantityNumber = format.parse(quantityString, parsePosition);
-        int quantity;
-        if (quantityNumber == null || quantityString.length() != parsePosition.getIndex()) {
-            throw new NumberFormatException("Parsing failed: not a number");
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Cart cart = cartService.getCart(request);
+        AddToCartDto addToCartDto = addToCartMapper.map(request);
+        try {
+            cartService.add(cart, addToCartDto.getProductId(), addToCartDto.getQuantity());
+        } catch (OutOfStockException ex) {
+            addToCartDto.getErrors().put(addToCartDto.getProductId(), ex.getMessage());
+        }
+        if (addToCartDto.getErrors().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + CART_MESSAGE);
         } else {
-            quantity = quantityNumber.intValue();
-            if (quantity <= 0) {
-                throw new NumberFormatException("Parsing failed: quantity should be >= 0");
-            }
+            request.setAttribute(String.valueOf(CartParam.ERRORS).toLowerCase(), addToCartDto.getErrors());
+            request.getRequestDispatcher(PRODUCTS_PATH).forward(request, response);
         }
-        return quantity;
-    }
-
-    private String findQuantityString(String[] productsIdsString, String[] quantityStrings, String productIdString) {
-        String quantityString = null;
-        for (int i = 0; i < productsIdsString.length; i++) {
-            if (productsIdsString[i].equals(productIdString)) {
-                quantityString = quantityStrings[i];
-            }
-        }
-        return quantityString;
     }
 }

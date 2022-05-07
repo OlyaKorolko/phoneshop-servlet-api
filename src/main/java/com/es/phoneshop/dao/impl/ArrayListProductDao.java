@@ -2,6 +2,7 @@ package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.AbstractDao;
 import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.dto.ProductListPageFilterDto;
 import com.es.phoneshop.enums.SortField;
 import com.es.phoneshop.enums.SortOrder;
 import com.es.phoneshop.model.product.Product;
@@ -82,18 +83,18 @@ public class ArrayListProductDao extends AbstractDao<Product> implements Product
     }
 
     @Override
-    public List<Product> findProducts(String query, String sortField, String sortOrder) {
+    public List<Product> findProducts(ProductListPageFilterDto productListPageFilter) {
         readWriteLock.readLock().lock();
         List<Product> fetchedProducts;
         try {
             fetchedProducts = products.stream()
                     .filter(this::checkProductInStock)
                     .collect(Collectors.toList());
-            if (query != null && !query.isEmpty()) {
-                fetchedProducts = sortByQuery(query, fetchedProducts);
+            if (productListPageFilter.getQuery().isPresent()) {
+                fetchedProducts = sortByQuery(productListPageFilter.getQuery().get(), fetchedProducts);
             }
-            if (sortField != null && !sortField.isEmpty() && sortOrder != null && !sortOrder.isEmpty()) {
-                fetchedProducts = sortByField(fetchedProducts, sortField, sortOrder);
+            if (productListPageFilter.getSortField().isPresent() && productListPageFilter.getSortOrder().isPresent()) {
+                fetchedProducts = sortByField(fetchedProducts, productListPageFilter.getSortField().get(), productListPageFilter.getSortOrder().get());
             }
             return fetchedProducts;
         } finally {
