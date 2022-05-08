@@ -1,15 +1,17 @@
 package com.es.phoneshop.dao;
 
+import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.order.Order;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderDao {
-    Order getItem(Long id);
+    Optional<Order> findById(Long id);
 
-    Order getOrderBySecureId(String id);
+    Optional<Order> findBySecureId(String id);
 
-    void save(Order order);
+    void save(Order order, List<CartItem> cartItems);
 
-    List<Order> findOrders();
+    List<Order> findAll(String sessionId);
 }

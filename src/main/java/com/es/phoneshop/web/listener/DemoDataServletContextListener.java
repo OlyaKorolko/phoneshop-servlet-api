@@ -1,18 +1,9 @@
 package com.es.phoneshop.web.listener;
 
-import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.dao.impl.ArrayListProductDao;
-import com.es.phoneshop.model.product.Product;
-
-import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
 
 public class DemoDataServletContextListener implements ServletContextListener {
-    public static final String PARAMETER = "insertDemoData";
+    /*public static final String PARAMETER = "insertDemoData";
     private final ProductDao productDao;
 
     public DemoDataServletContextListener() {
@@ -26,9 +17,9 @@ public class DemoDataServletContextListener implements ServletContextListener {
         if (insertDemoData) {
             getSampleProducts().forEach(productDao::save);
         }
-    }
+    }*/
 
-    public List<Product> getSampleProducts() {
+    /*public List<Product> getSampleProducts() {
         List<Product> products = new ArrayList<>();
         Currency usd = Currency.getInstance("USD");
         products.add(new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "/Samsung/Samsung%20Galaxy%20S.jpg"));
@@ -45,5 +36,5 @@ public class DemoDataServletContextListener implements ServletContextListener {
         products.add(new Product("simc61", "Siemens C61", new BigDecimal(80), usd, 30, "/Siemens/Siemens%20C61.jpg"));
         products.add(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "/Siemens/Siemens%20SXG75.jpg"));
         return products;
-    }
+    }*/
 }

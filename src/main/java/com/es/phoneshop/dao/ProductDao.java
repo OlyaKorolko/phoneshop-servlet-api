@@ -1,17 +1,17 @@
 package com.es.phoneshop.dao;
 
-import com.es.phoneshop.dto.ProductListPageFilterDto;
+import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.product.Product;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProductDao {
-    Product getItem(Long id);
+    Optional<Product> findById(Long id);
 
-    List<Product> findProducts(ProductListPageFilterDto productListPageFilter);
+    List<Product> findAll();
 
     void save(Product product);
 
-    void delete(Long id);
+    List<CartItem> findByOrderId(Long orderId);
 }

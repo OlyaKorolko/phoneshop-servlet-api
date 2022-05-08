@@ -20,7 +20,7 @@ header img {
     color: #f56906;
 }
 
-#cart-button {
+#cart-button, #orders-button {
     width: 100px;
     height: 40px;
     font-size: 25px;

@@ -1,9 +1,11 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.dao.impl.my_sql.MySQLProductDao;
+import com.es.phoneshop.dao.utils.DBConnector;
 import com.es.phoneshop.enums.ProductParam;
 import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.service.ProductService;
+import com.es.phoneshop.service.impl.DefaultProductService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -13,12 +15,12 @@ import java.io.IOException;
 
 public class ProductPriceHistoryPageServlet extends HttpServlet {
     private static final String PRICE_HISTORY_PATH = "/WEB-INF/pages/productPriceHistory.jsp";
-    private ProductDao productDao;
+    private ProductService productService;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        productDao = ArrayListProductDao.getInstance();
+        productService = new DefaultProductService(new MySQLProductDao(new DBConnector()));
     }
 
     @Override
@@ -28,6 +30,6 @@ public class ProductPriceHistoryPageServlet extends HttpServlet {
     }
 
     private Product getProduct(HttpServletRequest request) {
-        return productDao.getItem(Long.valueOf(request.getPathInfo().substring(1)));
+        return productService.findById(Long.valueOf(request.getPathInfo().substring(1)));
     }
 }

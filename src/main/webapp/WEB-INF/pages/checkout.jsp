@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<jsp:useBean id="cart" type="com.es.phoneshop.model.cart.Cart" scope="request"/>
 <jsp:useBean id="order" type="com.es.phoneshop.model.order.Order" scope="request"/>
 <tags:master pageTitle="Checkout">
     <p>
@@ -16,7 +17,7 @@
         <div class="error">An error occurred while placing the order.</div>
     </c:if>
     </p>
-    <c:if test="${not empty order.items}">
+    <c:if test="${not empty cart.items}">
         <form method="post" action="${pageContext.servletContext.contextPath}/checkout">
             <table>
                 <thead>
@@ -27,7 +28,7 @@
                     <td class="price">Price</td>
                 </tr>
                 </thead>
-                <c:forEach var="cartItem" items="${order.items}" varStatus="status">
+                <c:forEach var="cartItem" items="${cart.items}" varStatus="status">
                     <tr>
                         <td>
                             <img class="product-tile" src="${cartItem.product.imageUrl}" alt="product-image">
@@ -48,15 +49,15 @@
             <p>
             <p>Subtotal cost:
                 <fmt:formatNumber value="${order.subtotalCost}" type="currency"
-                                  currencySymbol="${order.items[0].product.currency.symbol}"/>
+                                  currencySymbol="${cart.items[0].product.currency.symbol}"/>
             </p>
             <p>Delivery cost:
                 <fmt:formatNumber value="${order.deliveryCost}" type="currency"
-                                  currencySymbol="${order.items[0].product.currency.symbol}"/>
+                                  currencySymbol="${cart.items[0].product.currency.symbol}"/>
             </p>
             <p>Total cost:
-                <fmt:formatNumber value="${order.totalCost}" type="currency"
-                                  currencySymbol="${order.items[0].product.currency.symbol}"/>
+                <fmt:formatNumber value="${order.subtotalCost + order.deliveryCost}" type="currency"
+                                  currencySymbol="${cart.items[0].product.currency.symbol}"/>
             </p>
             </p>
             <h2>Your details</h2>

@@ -1,21 +1,20 @@
 package com.es.phoneshop.model.order;
 
 import com.es.phoneshop.enums.PaymentMethod;
-import com.es.phoneshop.model.cart.Cart;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
-@Getter
-@Setter
-public class Order extends Cart {
+@EqualsAndHashCode
+@Builder
+@Data
+public class Order {
     private Long id;
     private String secureId;
-    private BigDecimal subtotalCost = BigDecimal.ZERO;
+    private BigDecimal subtotalCost;
     private BigDecimal deliveryCost;
     private String firstName;
     private String lastName;
@@ -23,4 +22,5 @@ public class Order extends Cart {
     private LocalDate deliveryDate;
     private String deliveryAddress;
     private PaymentMethod paymentMethod;
+    private String sessionId;
 }

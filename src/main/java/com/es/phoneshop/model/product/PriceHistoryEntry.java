@@ -1,8 +1,7 @@
 package com.es.phoneshop.model.product;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -10,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
 
-@AllArgsConstructor
+@Builder
 @Data
 public class PriceHistoryEntry implements Serializable, Cloneable {
     @Serial

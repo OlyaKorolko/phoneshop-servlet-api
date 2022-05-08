@@ -13,21 +13,9 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class CartItem implements Serializable, Cloneable {
+public class CartItem implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private Product product;
     private int quantity;
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        CartItem cartItem;
-        try {
-            cartItem = (CartItem) super.clone();
-        } catch (CloneNotSupportedException e) {
-            cartItem = new CartItem(this.product, this.quantity);
-        }
-        cartItem.product = (Product) this.product.clone();
-        return cartItem;
-    }
 }

@@ -1,10 +1,12 @@
 package com.es.phoneshop.service.impl;
 
 import com.es.phoneshop.dao.OrderDao;
-import com.es.phoneshop.dao.impl.ArrayListOrderDao;
+import com.es.phoneshop.dao.impl.my_sql.MySQLOrderDao;
+import com.es.phoneshop.dao.impl.my_sql.MySQLOrderItemDao;
+import com.es.phoneshop.dao.utils.DBConnector;
+import com.es.phoneshop.dto.CheckoutPageDto;
 import com.es.phoneshop.enums.PaymentMethod;
 import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.order.Order;
 import com.es.phoneshop.service.OrderService;
 import lombok.AccessLevel;
@@ -14,11 +16,10 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DefaultOrderService implements OrderService {
-    private final OrderDao orderDao = ArrayListOrderDao.getInstance();
+    private final OrderDao orderDao = new MySQLOrderDao(new DBConnector(), new MySQLOrderItemDao(new DBConnector()));
     private static volatile OrderService instance;
 
     public static synchronized OrderService getInstance() {
@@ -32,25 +33,25 @@ public class DefaultOrderService implements OrderService {
         return instance;
     }
 
-    @Override
-    public Order getOrder(Cart cart) {
-        Order order = new Order();
-        order.setItems(cart.getItems().stream().map(cartItem -> {
-            try {
-                return (CartItem) cartItem.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList()));
+    private Order createOrder(CheckoutPageDto checkoutPageDto, Cart cart) {
+        Order order = Order.builder().build();
+
+        checkoutPageDto.getFirstName().ifPresent(order::setFirstName);
+        checkoutPageDto.getLastName().ifPresent(order::setLastName);
+        checkoutPageDto.getPhone().ifPresent(order::setPhone);
+        checkoutPageDto.getDeliveryDate().ifPresent(order::setDeliveryDate);
+        checkoutPageDto.getDeliveryAddress().ifPresent(order::setDeliveryAddress);
+        checkoutPageDto.getPaymentMethod().ifPresent(order::setPaymentMethod);
+
         if (!cart.getItems().isEmpty()) {
             order.setSubtotalCost(cart.getTotalCost());
             order.setDeliveryCost(calculateDeliveryCost());
-            order.setTotalCost(order.getSubtotalCost().add(order.getDeliveryCost()));
         }
         return order;
     }
 
-    private BigDecimal calculateDeliveryCost() {
+    @Override
+    public BigDecimal calculateDeliveryCost() {
         return new BigDecimal(5);
     }
 
@@ -60,8 +61,11 @@ public class DefaultOrderService implements OrderService {
     }
 
     @Override
-    public void placeOrder(Order order) {
+    public Order placeOrder(CheckoutPageDto checkoutPageDto, Cart cart, String sessionId) {
+        Order order = createOrder(checkoutPageDto, cart);
         order.setSecureId(UUID.randomUUID().toString());
-        orderDao.save(order);
+        order.setSessionId(sessionId);
+        orderDao.save(order, cart.getItems());
+        return order;
     }
 }

@@ -1,7 +1,7 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.dao.impl.my_sql.MySQLProductDao;
+import com.es.phoneshop.dao.utils.DBConnector;
 import com.es.phoneshop.dto.ProductDetailsPageDto;
 import com.es.phoneshop.enums.CartParam;
 import com.es.phoneshop.enums.ProductParam;
@@ -9,8 +9,10 @@ import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.mapper.ProductDetailsPageMapper;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.service.CartService;
+import com.es.phoneshop.service.ProductService;
 import com.es.phoneshop.service.ViewHistoryService;
 import com.es.phoneshop.service.impl.DefaultCartService;
+import com.es.phoneshop.service.impl.DefaultProductService;
 import com.es.phoneshop.service.impl.DefaultViewHistoryService;
 
 import javax.servlet.ServletException;
@@ -25,7 +27,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private static final String PRODUCTS_PATH_1 = "/products?message=Product ";
     private static final String PRODUCTS_PATH_2 = " was added to cart";
     private static final int ERROR_CODE = 500;
-    private ProductDao productDao;
+    private ProductService productService;
     private CartService cartService;
     private ViewHistoryService viewHistoryService;
     private ProductDetailsPageMapper productDetailsPageMapper;
@@ -33,7 +35,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        productDao = ArrayListProductDao.getInstance();
+        productService = new DefaultProductService(new MySQLProductDao(new DBConnector()));
         cartService = DefaultCartService.getInstance();
         viewHistoryService = DefaultViewHistoryService.getInstance();
         productDetailsPageMapper = new ProductDetailsPageMapper();
@@ -52,12 +54,12 @@ public class ProductDetailsPageServlet extends HttpServlet {
         request.setAttribute(String.valueOf(ProductParam.VIEW_HISTORY).toLowerCase(),
                 viewHistoryService.getViewHistory(request));
         request.setAttribute(String.valueOf(ProductParam.PRODUCT).toLowerCase(),
-                productDao.getItem(productId));
+                productService.findById(productId));
         request.setAttribute(String.valueOf(CartParam.CART).toLowerCase(),
                 cartService.getCart(request));
         request.getRequestDispatcher(PRODUCT_DETAILS_PATH).forward(request, response);
         viewHistoryService.addToHistory(viewHistoryService.getViewHistory(request).getHistory(),
-                productDao.getItem(productId));
+                productService.findById(productId));
     }
 
     @Override

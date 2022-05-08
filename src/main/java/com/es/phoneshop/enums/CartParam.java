@@ -4,5 +4,6 @@ public enum CartParam {
     CART,
     ERRORS,
     ORDER,
-    PAYMENT_METHODS
+    PAYMENT_METHODS,
+    ITEMS
 }

@@ -1,11 +1,13 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.dao.impl.my_sql.MySQLProductDao;
+import com.es.phoneshop.dao.utils.DBConnector;
 import com.es.phoneshop.dto.ProductListPageFilterDto;
 import com.es.phoneshop.enums.ProductParam;
 import com.es.phoneshop.mapper.ProductListPageFilterMapper;
+import com.es.phoneshop.service.ProductService;
 import com.es.phoneshop.service.ViewHistoryService;
+import com.es.phoneshop.service.impl.DefaultProductService;
 import com.es.phoneshop.service.impl.DefaultViewHistoryService;
 
 import javax.servlet.ServletException;
@@ -16,14 +18,14 @@ import java.io.IOException;
 
 public class ProductListPageServlet extends HttpServlet {
     private static final String PRODUCTS_PATH = "/WEB-INF/pages/productList.jsp";
-    private ProductDao productDao;
+    private ProductService productService;
     private ViewHistoryService viewHistoryService;
     ProductListPageFilterMapper mapper;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        productDao = ArrayListProductDao.getInstance();
+        productService = new DefaultProductService(new MySQLProductDao(new DBConnector()));
         viewHistoryService = DefaultViewHistoryService.getInstance();
         mapper = new ProductListPageFilterMapper();
     }
@@ -33,7 +35,7 @@ public class ProductListPageServlet extends HttpServlet {
         ProductListPageFilterDto productListPageFilterDto = mapper.map(request);
 
         request.setAttribute(String.valueOf(ProductParam.PRODUCTS).toLowerCase(),
-                productDao.findProducts(productListPageFilterDto));
+                productService.findByFilter(productListPageFilterDto));
         request.setAttribute(String.valueOf(ProductParam.VIEW_HISTORY).toLowerCase(),
                 viewHistoryService.getViewHistory(request));
 

@@ -1,22 +1,20 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.model.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class Product extends BaseEntity implements Serializable, Cloneable {
+@Builder
+public class Product implements Serializable, Cloneable {
     @Serial
     private static final long serialVersionUID = 1L;
     private static final String path = "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer";
@@ -29,25 +27,15 @@ public class Product extends BaseEntity implements Serializable, Cloneable {
     private String imageUrl;
     private final List<PriceHistoryEntry> priceHistory = new ArrayList<>();
 
-    public Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
-        this.id = id;
-        this.code = code;
-        this.description = description;
-        this.price = price;
-        this.currency = currency;
-        this.stock = stock;
-        this.imageUrl = path + imageUrl;
-        priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
+    public static ProductBuilder builder() {
+        return new CustomProductBuilder();
     }
 
-    public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
-        this.code = code;
-        this.description = description;
-        this.price = price;
-        this.currency = currency;
-        this.stock = stock;
-        this.imageUrl = path + imageUrl;
-        priceHistory.add(new PriceHistoryEntry(LocalDateTime.now(), price, currency));
+    private static class CustomProductBuilder extends ProductBuilder {
+        @Override
+        public ProductBuilder imageUrl(String imageUrl) {
+            return super.imageUrl(path + imageUrl);
+        }
     }
 
     @Override

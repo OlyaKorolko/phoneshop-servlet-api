@@ -1,12 +1,13 @@
 package com.es.phoneshop.service.impl;
 
-import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.dao.impl.my_sql.MySQLProductDao;
+import com.es.phoneshop.dao.utils.DBConnector;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.service.CartService;
+import com.es.phoneshop.service.ProductService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ import java.util.Optional;
 public class DefaultCartService implements CartService {
     public static final String CART_SESSION_ATTRIBUTE = "cart";
     private static volatile CartService instance;
-    private final ProductDao productDao = ArrayListProductDao.getInstance();
+    private final ProductService productService = new DefaultProductService(new MySQLProductDao(new DBConnector()));
 
     public static synchronized CartService getInstance() {
         if (instance == null) {
@@ -45,13 +46,13 @@ public class DefaultCartService implements CartService {
     @Override
     public void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
         synchronized (cart) {
-            Product product = productDao.getItem(productId);
+            Product product = productService.findById(productId);
             Optional<CartItem> foundCartItem = findCartItem(cart, product);
             int foundItemQuantityInCart = foundCartItem.map(CartItem::getQuantity).orElse(0);
 
             if (product.getStock() < quantity + foundItemQuantityInCart) {
                 throw new OutOfStockException("Out of stock, available: " + product.getStock() +
-                        ", requested: " + quantity + foundItemQuantityInCart);
+                        ", requested: " + (quantity + foundItemQuantityInCart));
             }
             if (foundCartItem.isPresent()) {
                 foundCartItem.get().setQuantity(foundItemQuantityInCart + quantity);
@@ -73,7 +74,7 @@ public class DefaultCartService implements CartService {
     @Override
     public void update(Cart cart, Long productId, int quantity) throws OutOfStockException {
         synchronized (cart) {
-            Product product = productDao.getItem(productId);
+            Product product = productService.findById(productId);
             Optional<CartItem> foundCartItem = findCartItem(cart, product);
 
             if (product.getStock() < quantity) {

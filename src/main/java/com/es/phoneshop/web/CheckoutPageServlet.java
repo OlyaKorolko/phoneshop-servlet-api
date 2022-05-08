@@ -34,7 +34,12 @@ public class CheckoutPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Cart cart = cartService.getCart(request);
-        request.setAttribute(String.valueOf(CartParam.ORDER).toLowerCase(), orderService.getOrder(cart));
+        request.setAttribute(String.valueOf(CartParam.CART).toLowerCase(), cart);
+        request.setAttribute(String.valueOf(CartParam.ORDER).toLowerCase(),
+                Order.builder()
+                        .subtotalCost(cart.getTotalCost())
+                        .deliveryCost(orderService.calculateDeliveryCost())
+                        .build());
         request.setAttribute(checkoutPageMapper.parseParameter(CartParam.PAYMENT_METHODS), orderService.getPaymentMethods());
         request.getRequestDispatcher(CHECKOUT_PATH).forward(request, response);
     }
@@ -42,33 +47,22 @@ public class CheckoutPageServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         Cart cart = cartService.getCart(request);
-        Order order = orderService.getOrder(cart);
         CheckoutPageDto checkoutPageDto = checkoutPageMapper.map(request);
-        placeOrder(request, response, checkoutPageDto, order);
+        placeOrder(request, response, checkoutPageDto, cart);
     }
 
     private void placeOrder(HttpServletRequest request, HttpServletResponse response, CheckoutPageDto checkoutPageDto,
-                            Order order) throws IOException, ServletException {
+                            Cart cart) throws IOException, ServletException {
         if (checkoutPageDto.getErrors().isEmpty()) {
-            setOrderInfo(order, checkoutPageDto);
-            orderService.placeOrder(order);
+            Order order = orderService.placeOrder(checkoutPageDto, cart, request.getSession().getId());
             cartService.removeCart(request);
             response.sendRedirect(request.getContextPath() + ORDER_OVERVIEW_PATH + order.getSecureId());
         } else {
             request.setAttribute(String.valueOf(CartParam.ERRORS).toLowerCase(), checkoutPageDto.getErrors());
-            request.setAttribute(String.valueOf(CartParam.ORDER).toLowerCase(), order);
+            request.setAttribute(String.valueOf(CartParam.ORDER).toLowerCase(), Order.builder().build());
             request.setAttribute(checkoutPageMapper.parseParameter(CartParam.PAYMENT_METHODS),
                     orderService.getPaymentMethods());
             request.getRequestDispatcher(CHECKOUT_PATH).forward(request, response);
         }
-    }
-
-    private void setOrderInfo(Order order, CheckoutPageDto checkoutPageDto) {
-        checkoutPageDto.getFirstName().ifPresent(order::setFirstName);
-        checkoutPageDto.getLastName().ifPresent(order::setLastName);
-        checkoutPageDto.getPhone().ifPresent(order::setPhone);
-        checkoutPageDto.getDeliveryDate().ifPresent(order::setDeliveryDate);
-        checkoutPageDto.getDeliveryAddress().ifPresent(order::setDeliveryAddress);
-        checkoutPageDto.getPaymentMethod().ifPresent(order::setPaymentMethod);
     }
 }

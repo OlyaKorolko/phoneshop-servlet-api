@@ -9,6 +9,10 @@
         <input id="cart-button" type="button"
                onclick="location.href='${pageContext.servletContext.contextPath}/cart'" value="Cart"/>
     </p>
+    <p>
+        <input id="orders-button" type="button"
+               onclick="location.href='${pageContext.servletContext.contextPath}/orders'" value="Orders"/>
+    </p>
     <form>
         <label><input name="query" value="${param.query}" placeholder="Search product..."></label>
         <button>Search</button>

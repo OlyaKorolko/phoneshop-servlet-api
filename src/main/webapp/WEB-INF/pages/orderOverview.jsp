@@ -4,12 +4,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="order" type="com.es.phoneshop.model.order.Order" scope="request"/>
+<jsp:useBean id="items" type="java.util.ArrayList" scope="request"/>
 <tags:master pageTitle="Order Overview">
     <p>
         <input type="button" onclick="location.href='${pageContext.servletContext.contextPath}/products'" value="Back"/>
     </p>
     <h1>Order Overview</h1>
-    <c:if test="${not empty order.items}">
+    <c:if test="${not empty items}">
         <table>
             <thead>
             <tr>
@@ -19,7 +20,7 @@
                 <td class="price">Price</td>
             </tr>
             </thead>
-            <c:forEach var="cartItem" items="${order.items}" varStatus="status">
+            <c:forEach var="cartItem" items="${items}" varStatus="status">
                 <tr>
                     <td>
                         <img class="product-tile" src="${cartItem.product.imageUrl}" alt="product-image">
@@ -39,15 +40,15 @@
         </table>
         <p>Subtotal cost:
             <fmt:formatNumber value="${order.subtotalCost}" type="currency"
-                              currencySymbol="${order.items[0].product.currency.symbol}"/>
+                              currencySymbol="${items[0].product.currency.symbol}"/>
         </p>
         <p>Delivery cost:
             <fmt:formatNumber value="${order.deliveryCost}" type="currency"
-                              currencySymbol="${order.items[0].product.currency.symbol}"/>
+                              currencySymbol="${items[0].product.currency.symbol}"/>
         </p>
         <p>Total cost:
-            <fmt:formatNumber value="${order.totalCost}" type="currency"
-                              currencySymbol="${order.items[0].product.currency.symbol}"/>
+            <fmt:formatNumber value="${order.subtotalCost + order.deliveryCost}" type="currency"
+                              currencySymbol="${items[0].product.currency.symbol}"/>
         </p>
         <h2>Your details</h2>
         <table>
