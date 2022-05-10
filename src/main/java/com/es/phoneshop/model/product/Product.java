@@ -1,6 +1,7 @@
 package com.es.phoneshop.model.product;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = "priceHistory")
 @Builder
 public class Product implements Serializable, Cloneable {
     @Serial

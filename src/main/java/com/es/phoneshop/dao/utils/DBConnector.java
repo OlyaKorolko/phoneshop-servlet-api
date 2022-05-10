@@ -12,9 +12,14 @@ import java.sql.SQLException;
 @NoArgsConstructor
 @Slf4j
 public class DBConnector {
-    private static final String DB_PATH = "jdbc:mysql://localhost:3306/phone_shop";
+    private static final String DB_PATH = "jdbc:mysql://localhost:3306/";
+    private String DB_NAME = "phone_shop";
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "admin";
+
+    public DBConnector(String DB_NAME) {
+        this.DB_NAME = DB_NAME;
+    }
 
     @Getter
     private Connection connection;
@@ -52,7 +57,7 @@ public class DBConnector {
         try {
             if (connection == null || connection.isClosed()) {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection(DB_PATH, DB_USERNAME, DB_PASSWORD);
+                connection = DriverManager.getConnection(DB_PATH + DB_NAME, DB_USERNAME, DB_PASSWORD);
             }
             connection.setAutoCommit(false);
         } catch (SQLException ex) {
