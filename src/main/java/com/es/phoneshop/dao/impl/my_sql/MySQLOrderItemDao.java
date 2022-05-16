@@ -3,7 +3,7 @@ package com.es.phoneshop.dao.impl.my_sql;
 import com.es.phoneshop.dao.OrderItemDao;
 import com.es.phoneshop.dao.utils.DBConnector;
 import com.es.phoneshop.dao.utils.DBQueries;
-import com.es.phoneshop.enums.DBProductColumn;
+import com.es.phoneshop.enums.db.DBProductColumn;
 import com.es.phoneshop.model.cart.CartItem;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

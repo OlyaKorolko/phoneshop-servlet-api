@@ -1,7 +1,7 @@
 package com.es.phoneshop.mapper;
 
 import com.es.phoneshop.dto.CheckoutPageDto;
-import com.es.phoneshop.enums.OrderParam;
+import com.es.phoneshop.enums.param.OrderParam;
 import com.es.phoneshop.enums.PaymentMethod;
 
 import javax.servlet.http.HttpServletRequest;

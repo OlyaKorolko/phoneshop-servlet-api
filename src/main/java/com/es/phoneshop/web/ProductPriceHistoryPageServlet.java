@@ -2,7 +2,7 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.dao.impl.my_sql.MySQLProductDao;
 import com.es.phoneshop.dao.utils.DBConnector;
-import com.es.phoneshop.enums.ProductParam;
+import com.es.phoneshop.enums.param.ProductParam;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.service.ProductService;
 import com.es.phoneshop.service.impl.DefaultProductService;

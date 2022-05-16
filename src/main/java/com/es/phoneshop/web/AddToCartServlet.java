@@ -1,7 +1,7 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.dto.AddToCartDto;
-import com.es.phoneshop.enums.CartParam;
+import com.es.phoneshop.enums.param.CartParam;
 import com.es.phoneshop.exception.OutOfStockException;
 import com.es.phoneshop.mapper.AddToCartMapper;
 import com.es.phoneshop.model.cart.Cart;

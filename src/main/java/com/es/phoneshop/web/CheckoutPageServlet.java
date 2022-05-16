@@ -1,7 +1,7 @@
 package com.es.phoneshop.web;
 
 import com.es.phoneshop.dto.CheckoutPageDto;
-import com.es.phoneshop.enums.CartParam;
+import com.es.phoneshop.enums.param.CartParam;
 import com.es.phoneshop.mapper.CheckoutPageMapper;
 import com.es.phoneshop.model.cart.Cart;
 import com.es.phoneshop.model.order.Order;

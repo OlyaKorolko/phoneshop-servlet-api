@@ -2,8 +2,8 @@ package com.es.phoneshop.service.impl;
 
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dto.ProductListPageFilterDto;
-import com.es.phoneshop.enums.SortField;
-import com.es.phoneshop.enums.SortOrder;
+import com.es.phoneshop.enums.sorting.SortField;
+import com.es.phoneshop.enums.sorting.SortOrder;
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.service.ProductService;

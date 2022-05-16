@@ -1,4 +1,4 @@
-package com.es.phoneshop.enums;
+package com.es.phoneshop.enums.sorting;
 
 public enum SortOrder {
     ASC,

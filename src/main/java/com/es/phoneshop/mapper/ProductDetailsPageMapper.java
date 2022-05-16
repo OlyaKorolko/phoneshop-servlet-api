@@ -1,7 +1,7 @@
 package com.es.phoneshop.mapper;
 
 import com.es.phoneshop.dto.ProductDetailsPageDto;
-import com.es.phoneshop.enums.ProductParam;
+import com.es.phoneshop.enums.param.ProductParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.NumberFormat;

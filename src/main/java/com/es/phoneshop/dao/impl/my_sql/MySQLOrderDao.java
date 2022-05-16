@@ -4,7 +4,7 @@ import com.es.phoneshop.dao.OrderDao;
 import com.es.phoneshop.dao.OrderItemDao;
 import com.es.phoneshop.dao.utils.DBConnector;
 import com.es.phoneshop.dao.utils.DBQueries;
-import com.es.phoneshop.enums.DBOrderColumn;
+import com.es.phoneshop.enums.db.DBOrderColumn;
 import com.es.phoneshop.enums.PaymentMethod;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.order.Order;

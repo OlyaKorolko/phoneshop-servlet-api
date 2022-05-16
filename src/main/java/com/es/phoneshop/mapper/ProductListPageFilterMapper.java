@@ -1,7 +1,7 @@
 package com.es.phoneshop.mapper;
 
 import com.es.phoneshop.dto.ProductListPageFilterDto;
-import com.es.phoneshop.enums.SortParam;
+import com.es.phoneshop.enums.sorting.SortParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;

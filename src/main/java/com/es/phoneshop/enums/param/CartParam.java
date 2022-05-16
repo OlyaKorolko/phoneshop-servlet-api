@@ -1,4 +1,4 @@
-package com.es.phoneshop.enums;
+package com.es.phoneshop.enums.param;
 
 public enum CartParam {
     CART,

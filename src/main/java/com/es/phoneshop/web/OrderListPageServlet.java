@@ -6,7 +6,7 @@ import com.es.phoneshop.dao.impl.my_sql.MySQLOrderDao;
 import com.es.phoneshop.dao.impl.my_sql.MySQLOrderItemDao;
 import com.es.phoneshop.dao.impl.my_sql.MySQLProductDao;
 import com.es.phoneshop.dao.utils.DBConnector;
-import com.es.phoneshop.enums.CartParam;
+import com.es.phoneshop.enums.param.CartParam;
 import com.es.phoneshop.model.cart.CartItem;
 import com.es.phoneshop.model.order.Order;
 
